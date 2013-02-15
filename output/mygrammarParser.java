@@ -73,12 +73,12 @@ public class mygrammarParser extends Parser {
 
 
 	public mygrammarParser(CommonTokenStream input) {
-		this(input, new RecognizerSharedState());
+		this(input);
 	}
 
-	public mygrammarParser(TokenStream input, RecognizerSharedState state) {
+	/*public mygrammarParser(TokenStream input, RecognizerSharedState state) {
 		super(input, state);
-	}
+	}*/
 
 
 	protected TreeAdaptor adaptor = new CommonTreeAdaptor();
