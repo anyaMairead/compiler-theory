@@ -38,12 +38,14 @@ tokens {PLUS = '+';
               CommonTokenStream tokens = new CommonTokenStream(l);
               mygrammarParser p = new mygramamrParser(tokens);
               try {
-                  p.expr();
+                  p.exp();
               } 
               catch (RecognitionException rex) {
-                  System.err.println("Exception: " + e);
+                  displayRecognitionError();
+                  System.err.println("Exception: " + rex);
               }
               catch (IOException io) {
+                  displayRecognitionError();
                   System.err.println("Exception: " + io);
               }
           }
@@ -53,7 +55,7 @@ tokens {PLUS = '+';
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 WS  :   ( ' ' | '\t' | '\r' | '\n' ) {$channel=HIDDEN;};
 CHAR :  '\'' (~('\''|'\\') ) '\'';
-NUMBER 	: (DIGIT)+;
+NUMBER 	: ('-')? (DIGIT)+;
 STRING :  '"' (~('\\'|'"') )* '"';
 fragment DIGIT :	 '0'..'9';
 
@@ -62,7 +64,7 @@ fragment DIGIT :	 '0'..'9';
 program	:	includes decls (procedure)* main EOF;
 args 	:	(typeident (COMMA typeident)*)? -> ^(ARGS (typeident(typeident)*)?)?;
 includes :	('#include' STRING)* -> ^(INCLS (STRING)*)?;
-main	: 'main' LPAREN RPAREN body -> ^(MAIN body);
+main	:       'main' LPAREN RPAREN body -> ^(MAIN body);
 procedure :	('int' | 'char')? ID^ LPAREN! args RPAREN! body;
 typeident :	'int'^ ID | 'char'^ ID;
 decls 	:	(typeident SEMICOLON)* -> ^(DECS (typeident)*)?;
@@ -83,4 +85,6 @@ factor : LPAREN! lexp RPAREN!
         |(MINUS)? (ID | NUMBER)
         |CHAR
         |ID LPAREN! (ID(COMMA! ID)*)? RPAREN! ;
+        
+
 	

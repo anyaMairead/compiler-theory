@@ -1,4 +1,4 @@
-// $ANTLR 3.5 /Users/Anya/github/compiler-theory/mygrammar.g 2013-02-15 13:44:21
+// $ANTLR 3.5 /Users/Anya/github/compiler-theory/mygrammar.g 2013-02-15 14:17:37
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -709,8 +709,8 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = ID;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:53:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:53:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:55:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:55:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -720,7 +720,7 @@ public class mygrammarLexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// /Users/Anya/github/compiler-theory/mygrammar.g:53:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:55:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -765,8 +765,8 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:54:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:54:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:56:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:56:9: ( ' ' | '\\t' | '\\r' | '\\n' )
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
 				input.consume();
@@ -793,8 +793,8 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = CHAR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:55:6: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:55:9: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
+			// /Users/Anya/github/compiler-theory/mygrammar.g:57:6: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:57:9: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
 			{
 			match('\''); 
 			if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
@@ -822,20 +822,36 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = NUMBER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:56:9: ( ( DIGIT )+ )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:56:11: ( DIGIT )+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:58:9: ( ( '-' )? ( DIGIT )+ )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:58:11: ( '-' )? ( DIGIT )+
 			{
-			// /Users/Anya/github/compiler-theory/mygrammar.g:56:11: ( DIGIT )+
-			int cnt2=0;
-			loop2:
+			// /Users/Anya/github/compiler-theory/mygrammar.g:58:11: ( '-' )?
+			int alt2=2;
+			int LA2_0 = input.LA(1);
+			if ( (LA2_0=='-') ) {
+				alt2=1;
+			}
+			switch (alt2) {
+				case 1 :
+					// /Users/Anya/github/compiler-theory/mygrammar.g:58:12: '-'
+					{
+					match('-'); 
+					}
+					break;
+
+			}
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:58:18: ( DIGIT )+
+			int cnt3=0;
+			loop3:
 			while (true) {
-				int alt2=2;
-				int LA2_0 = input.LA(1);
-				if ( ((LA2_0 >= '0' && LA2_0 <= '9')) ) {
-					alt2=1;
+				int alt3=2;
+				int LA3_0 = input.LA(1);
+				if ( ((LA3_0 >= '0' && LA3_0 <= '9')) ) {
+					alt3=1;
 				}
 
-				switch (alt2) {
+				switch (alt3) {
 				case 1 :
 					// /Users/Anya/github/compiler-theory/mygrammar.g:
 					{
@@ -851,11 +867,11 @@ public class mygrammarLexer extends Lexer {
 					break;
 
 				default :
-					if ( cnt2 >= 1 ) break loop2;
-					EarlyExitException eee = new EarlyExitException(2, input);
+					if ( cnt3 >= 1 ) break loop3;
+					EarlyExitException eee = new EarlyExitException(3, input);
 					throw eee;
 				}
-				cnt2++;
+				cnt3++;
 			}
 
 			}
@@ -874,20 +890,20 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = STRING;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:57:8: ( '\"' (~ ( '\\\\' | '\"' ) )* '\"' )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:57:11: '\"' (~ ( '\\\\' | '\"' ) )* '\"'
+			// /Users/Anya/github/compiler-theory/mygrammar.g:59:8: ( '\"' (~ ( '\\\\' | '\"' ) )* '\"' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:59:11: '\"' (~ ( '\\\\' | '\"' ) )* '\"'
 			{
 			match('\"'); 
-			// /Users/Anya/github/compiler-theory/mygrammar.g:57:15: (~ ( '\\\\' | '\"' ) )*
-			loop3:
+			// /Users/Anya/github/compiler-theory/mygrammar.g:59:15: (~ ( '\\\\' | '\"' ) )*
+			loop4:
 			while (true) {
-				int alt3=2;
-				int LA3_0 = input.LA(1);
-				if ( ((LA3_0 >= '\u0000' && LA3_0 <= '!')||(LA3_0 >= '#' && LA3_0 <= '[')||(LA3_0 >= ']' && LA3_0 <= '\uFFFF')) ) {
-					alt3=1;
+				int alt4=2;
+				int LA4_0 = input.LA(1);
+				if ( ((LA4_0 >= '\u0000' && LA4_0 <= '!')||(LA4_0 >= '#' && LA4_0 <= '[')||(LA4_0 >= ']' && LA4_0 <= '\uFFFF')) ) {
+					alt4=1;
 				}
 
-				switch (alt3) {
+				switch (alt4) {
 				case 1 :
 					// /Users/Anya/github/compiler-theory/mygrammar.g:
 					{
@@ -903,7 +919,7 @@ public class mygrammarLexer extends Lexer {
 					break;
 
 				default :
-					break loop3;
+					break loop4;
 				}
 			}
 
@@ -922,7 +938,7 @@ public class mygrammarLexer extends Lexer {
 	// $ANTLR start "DIGIT"
 	public final void mDIGIT() throws RecognitionException {
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:58:16: ( '0' .. '9' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:60:16: ( '0' .. '9' )
 			// /Users/Anya/github/compiler-theory/mygrammar.g:
 			{
 			if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
@@ -945,9 +961,9 @@ public class mygrammarLexer extends Lexer {
 	@Override
 	public void mTokens() throws RecognitionException {
 		// /Users/Anya/github/compiler-theory/mygrammar.g:1:8: ( ASSIGN | COMMA | DIV | EQ | GT | GTE | LBRACE | LPAREN | LT | LTE | MINUS | MOD | NEQ | PLUS | RBRACE | RPAREN | SEMICOLON | TIMES | T__34 | T__35 | T__36 | T__37 | T__38 | T__39 | T__40 | T__41 | T__42 | T__43 | T__44 | T__45 | T__46 | ID | WS | CHAR | NUMBER | STRING )
-		int alt4=36;
-		alt4 = dfa4.predict(input);
-		switch (alt4) {
+		int alt5=36;
+		alt5 = dfa5.predict(input);
+		switch (alt5) {
 			case 1 :
 				// /Users/Anya/github/compiler-theory/mygrammar.g:1:10: ASSIGN
 				{
@@ -1205,34 +1221,34 @@ public class mygrammarLexer extends Lexer {
 	}
 
 
-	protected DFA4 dfa4 = new DFA4(this);
-	static final String DFA4_eotS =
-		"\1\uffff\1\37\2\uffff\1\41\2\uffff\1\43\11\uffff\10\31\13\uffff\2\31\1"+
-		"\57\10\31\1\uffff\1\71\6\31\1\100\1\101\1\uffff\1\102\2\31\1\106\2\31"+
-		"\3\uffff\1\31\1\112\1\113\1\uffff\1\31\1\115\1\117\2\uffff\1\120\1\uffff"+
-		"\1\121\3\uffff";
-	static final String DFA4_eofS =
-		"\122\uffff";
-	static final String DFA4_minS =
-		"\1\11\1\75\2\uffff\1\75\2\uffff\1\75\11\uffff\1\150\1\154\1\146\1\141"+
-		"\1\165\1\162\1\145\1\150\13\uffff\1\141\1\163\1\60\1\164\1\151\1\164\1"+
-		"\151\1\141\1\151\1\162\1\145\1\uffff\1\60\1\156\1\160\1\156\1\144\1\165"+
-		"\1\154\2\60\1\uffff\1\60\1\165\1\164\1\60\1\162\1\145\3\uffff\1\164\2"+
-		"\60\1\uffff\1\156\2\60\2\uffff\1\60\1\uffff\1\60\3\uffff";
-	static final String DFA4_maxS =
-		"\1\175\1\75\2\uffff\1\75\2\uffff\1\75\11\uffff\1\150\1\154\1\156\1\141"+
-		"\1\165\1\162\1\145\1\150\13\uffff\1\141\1\163\1\172\1\164\1\151\1\164"+
-		"\1\151\1\164\1\151\1\162\1\145\1\uffff\1\172\1\156\1\160\1\156\1\144\1"+
-		"\165\1\154\2\172\1\uffff\1\172\1\165\1\164\1\172\1\162\1\145\3\uffff\1"+
-		"\164\2\172\1\uffff\1\156\2\172\2\uffff\1\172\1\uffff\1\172\3\uffff";
-	static final String DFA4_acceptS =
-		"\2\uffff\1\2\1\3\1\uffff\1\7\1\10\1\uffff\1\13\1\14\1\15\1\16\1\17\1\20"+
-		"\1\21\1\22\1\23\10\uffff\1\40\1\41\1\42\1\43\1\44\1\4\1\1\1\6\1\5\1\12"+
-		"\1\11\13\uffff\1\26\11\uffff\1\27\6\uffff\1\24\1\25\1\30\3\uffff\1\34"+
+	protected DFA5 dfa5 = new DFA5(this);
+	static final String DFA5_eotS =
+		"\1\uffff\1\37\2\uffff\1\41\2\uffff\1\43\1\44\10\uffff\10\31\14\uffff\2"+
+		"\31\1\60\10\31\1\uffff\1\72\6\31\1\101\1\102\1\uffff\1\103\2\31\1\107"+
+		"\2\31\3\uffff\1\31\1\113\1\114\1\uffff\1\31\1\116\1\120\2\uffff\1\121"+
+		"\1\uffff\1\122\3\uffff";
+	static final String DFA5_eofS =
+		"\123\uffff";
+	static final String DFA5_minS =
+		"\1\11\1\75\2\uffff\1\75\2\uffff\1\75\1\60\10\uffff\1\150\1\154\1\146\1"+
+		"\141\1\165\1\162\1\145\1\150\14\uffff\1\141\1\163\1\60\1\164\1\151\1\164"+
+		"\1\151\1\141\1\151\1\162\1\145\1\uffff\1\60\1\156\1\160\1\156\1\144\1"+
+		"\165\1\154\2\60\1\uffff\1\60\1\165\1\164\1\60\1\162\1\145\3\uffff\1\164"+
+		"\2\60\1\uffff\1\156\2\60\2\uffff\1\60\1\uffff\1\60\3\uffff";
+	static final String DFA5_maxS =
+		"\1\175\1\75\2\uffff\1\75\2\uffff\1\75\1\71\10\uffff\1\150\1\154\1\156"+
+		"\1\141\1\165\1\162\1\145\1\150\14\uffff\1\141\1\163\1\172\1\164\1\151"+
+		"\1\164\1\151\1\164\1\151\1\162\1\145\1\uffff\1\172\1\156\1\160\1\156\1"+
+		"\144\1\165\1\154\2\172\1\uffff\1\172\1\165\1\164\1\172\1\162\1\145\3\uffff"+
+		"\1\164\2\172\1\uffff\1\156\2\172\2\uffff\1\172\1\uffff\1\172\3\uffff";
+	static final String DFA5_acceptS =
+		"\2\uffff\1\2\1\3\1\uffff\1\7\1\10\2\uffff\1\14\1\15\1\16\1\17\1\20\1\21"+
+		"\1\22\1\23\10\uffff\1\40\1\41\1\42\1\43\1\44\1\4\1\1\1\6\1\5\1\12\1\11"+
+		"\1\13\13\uffff\1\26\11\uffff\1\27\6\uffff\1\24\1\25\1\30\3\uffff\1\34"+
 		"\3\uffff\1\33\1\35\1\uffff\1\37\1\uffff\1\31\1\36\1\32";
-	static final String DFA4_specialS =
-		"\122\uffff}>";
-	static final String[] DFA4_transitionS = {
+	static final String DFA5_specialS =
+		"\123\uffff}>";
+	static final String[] DFA5_transitionS = {
 			"\2\32\2\uffff\1\32\22\uffff\1\32\1\12\1\35\1\20\1\uffff\1\11\1\uffff"+
 			"\1\33\1\6\1\15\1\17\1\13\1\2\1\10\1\uffff\1\3\12\34\1\uffff\1\16\1\7"+
 			"\1\1\1\4\2\uffff\32\31\4\uffff\1\31\1\uffff\2\31\1\21\1\31\1\22\3\31"+
@@ -1245,6 +1261,7 @@ public class mygrammarLexer extends Lexer {
 			"",
 			"",
 			"\1\42",
+			"\12\34",
 			"",
 			"",
 			"",
@@ -1253,64 +1270,64 @@ public class mygrammarLexer extends Lexer {
 			"",
 			"",
 			"",
-			"",
-			"\1\44",
 			"\1\45",
-			"\1\46\7\uffff\1\47",
-			"\1\50",
+			"\1\46",
+			"\1\47\7\uffff\1\50",
 			"\1\51",
 			"\1\52",
 			"\1\53",
 			"\1\54",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
-			"",
 			"\1\55",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
+			"",
 			"\1\56",
+			"\1\57",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
-			"\1\60",
 			"\1\61",
 			"\1\62",
 			"\1\63",
-			"\1\64\22\uffff\1\65",
-			"\1\66",
+			"\1\64",
+			"\1\65\22\uffff\1\66",
 			"\1\67",
 			"\1\70",
+			"\1\71",
 			"",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
-			"\1\72",
 			"\1\73",
 			"\1\74",
 			"\1\75",
 			"\1\76",
 			"\1\77",
+			"\1\100",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
 			"",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
-			"\1\103",
 			"\1\104",
-			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\2\31\1\105\27\31",
-			"\1\107",
+			"\1\105",
+			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\2\31\1\106\27\31",
 			"\1\110",
-			"",
-			"",
-			"",
 			"\1\111",
+			"",
+			"",
+			"",
+			"\1\112",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
 			"",
-			"\1\114",
+			"\1\115",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
-			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\2\31\1\116\27\31",
+			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\2\31\1\117\27\31",
 			"",
 			"",
 			"\12\31\7\uffff\32\31\4\uffff\1\31\1\uffff\32\31",
@@ -1321,34 +1338,34 @@ public class mygrammarLexer extends Lexer {
 			""
 	};
 
-	static final short[] DFA4_eot = DFA.unpackEncodedString(DFA4_eotS);
-	static final short[] DFA4_eof = DFA.unpackEncodedString(DFA4_eofS);
-	static final char[] DFA4_min = DFA.unpackEncodedStringToUnsignedChars(DFA4_minS);
-	static final char[] DFA4_max = DFA.unpackEncodedStringToUnsignedChars(DFA4_maxS);
-	static final short[] DFA4_accept = DFA.unpackEncodedString(DFA4_acceptS);
-	static final short[] DFA4_special = DFA.unpackEncodedString(DFA4_specialS);
-	static final short[][] DFA4_transition;
+	static final short[] DFA5_eot = DFA.unpackEncodedString(DFA5_eotS);
+	static final short[] DFA5_eof = DFA.unpackEncodedString(DFA5_eofS);
+	static final char[] DFA5_min = DFA.unpackEncodedStringToUnsignedChars(DFA5_minS);
+	static final char[] DFA5_max = DFA.unpackEncodedStringToUnsignedChars(DFA5_maxS);
+	static final short[] DFA5_accept = DFA.unpackEncodedString(DFA5_acceptS);
+	static final short[] DFA5_special = DFA.unpackEncodedString(DFA5_specialS);
+	static final short[][] DFA5_transition;
 
 	static {
-		int numStates = DFA4_transitionS.length;
-		DFA4_transition = new short[numStates][];
+		int numStates = DFA5_transitionS.length;
+		DFA5_transition = new short[numStates][];
 		for (int i=0; i<numStates; i++) {
-			DFA4_transition[i] = DFA.unpackEncodedString(DFA4_transitionS[i]);
+			DFA5_transition[i] = DFA.unpackEncodedString(DFA5_transitionS[i]);
 		}
 	}
 
-	protected class DFA4 extends DFA {
+	protected class DFA5 extends DFA {
 
-		public DFA4(BaseRecognizer recognizer) {
+		public DFA5(BaseRecognizer recognizer) {
 			this.recognizer = recognizer;
-			this.decisionNumber = 4;
-			this.eot = DFA4_eot;
-			this.eof = DFA4_eof;
-			this.min = DFA4_min;
-			this.max = DFA4_max;
-			this.accept = DFA4_accept;
-			this.special = DFA4_special;
-			this.transition = DFA4_transition;
+			this.decisionNumber = 5;
+			this.eot = DFA5_eot;
+			this.eof = DFA5_eof;
+			this.min = DFA5_min;
+			this.max = DFA5_max;
+			this.accept = DFA5_accept;
+			this.special = DFA5_special;
+			this.transition = DFA5_transition;
 		}
 		@Override
 		public String getDescription() {

@@ -11,7 +11,7 @@ public class __Test__ {
 
         mygrammarParser g = new mygrammarParser(tokens, 49100, null);
         try {
-            g.program();
+            g.stmt();
         } catch (RecognitionException e) {
             e.printStackTrace();
         }
