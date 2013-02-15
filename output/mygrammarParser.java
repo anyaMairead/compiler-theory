@@ -1,15 +1,17 @@
-// $ANTLR 3.5 /Users/Anya/github/compiler-theory/mygrammar.g 2013-02-15 02:04:23
+// $ANTLR 3.5 /Users/Anya/github/compiler-theory/mygrammar.g 2013-02-15 13:36:07
 
 import org.antlr.runtime.*;
 import java.util.Stack;
 import java.util.List;
 import java.util.ArrayList;
 
+import org.antlr.runtime.debug.*;
+import java.io.IOException;
 import org.antlr.runtime.tree.*;
 
 
 @SuppressWarnings("all")
-public class mygrammarParser extends Parser {
+public class mygrammarParser extends DebugParser {
 	public static final String[] tokenNames = new String[] {
 		"<invalid>", "<EOR>", "<DOWN>", "<UP>", "ARGS", "ASSIGN", "CHAR", "COMMA", 
 		"DECS", "DIGIT", "DIV", "EQ", "EXPR", "GT", "GTE", "ID", "INCLS", "LBRACE", 
@@ -71,31 +73,78 @@ public class mygrammarParser extends Parser {
 	// delegators
 
 
+	public static final String[] ruleNames = new String[] {
+		"invalidRule", "includes", "stmt", "procedure", "stmtlist", "exp", "main", 
+		"typeident", "lexp", "body", "term", "args", "factor", "decls", "program"
+	};
+
+	public static final boolean[] decisionCanBacktrack = new boolean[] {
+		false, // invalid decision
+		false, false, false, false, false, false, false, false, false, false, 
+		    false, false, false, false, false, false, false, false, false
+	};
+
+ 
+	public int ruleLevel = 0;
+	public int getRuleLevel() { return ruleLevel; }
+	public void incRuleLevel() { ruleLevel++; }
+	public void decRuleLevel() { ruleLevel--; }
 	public mygrammarParser(TokenStream input) {
-		this(input, new RecognizerSharedState());
+		this(input, DebugEventSocketProxy.DEFAULT_DEBUGGER_PORT, new RecognizerSharedState());
 	}
-	public mygrammarParser(TokenStream input, RecognizerSharedState state) {
+	public mygrammarParser(TokenStream input, int port, RecognizerSharedState state) {
 		super(input, state);
+		DebugEventSocketProxy proxy =
+			new DebugEventSocketProxy(this,port,adaptor);
+		setDebugListener(proxy);
+		setTokenStream(new DebugTokenStream(input,proxy));
+		try {
+			proxy.handshake();
+		}
+		catch (IOException ioe) {
+			reportError(ioe);
+		}
+		TreeAdaptor adap = new CommonTreeAdaptor();
+		setTreeAdaptor(adap);
+		proxy.setTreeAdaptor(adap);
 	}
 
-	protected TreeAdaptor adaptor = new CommonTreeAdaptor();
+	public mygrammarParser(TokenStream input, DebugEventListener dbg) {
+		super(input, dbg);
+		 
+		TreeAdaptor adap = new CommonTreeAdaptor();
+		setTreeAdaptor(adap);
 
-	public void setTreeAdaptor(TreeAdaptor adaptor) {
-		this.adaptor = adaptor;
 	}
-	public TreeAdaptor getTreeAdaptor() {
-		return adaptor;
+
+	protected boolean evalPredicate(boolean result, String predicate) {
+		dbg.semanticPredicate(result, predicate);
+		return result;
 	}
+
+		protected DebugTreeAdaptor adaptor;
+		public void setTreeAdaptor(TreeAdaptor adaptor) {
+			this.adaptor = new DebugTreeAdaptor(dbg,adaptor);
+		}
+		public TreeAdaptor getTreeAdaptor() {
+			return adaptor;
+		}
 	@Override public String[] getTokenNames() { return mygrammarParser.tokenNames; }
 	@Override public String getGrammarFileName() { return "/Users/Anya/github/compiler-theory/mygrammar.g"; }
 
-	public static main(String[] args) throws displayRecognitionError {
-	              Lexer l = new Lexer(new ANTLRFileStream(...));
+
+	         public static void main(String[] args) throws displayRecognitionError {
+	              mygrammarLexer l = new mygrammarLexer(new ANTLRFileStream(args[4]));
 	              CommonTokenStream tokens = new CommonTokenStream(l);
-	              Parser p = new Parser(tokens);
-	              try {p.exp();} catch (Exception e) {System.err("Should hopefully never happen");}
+	              mygrammarParser p = new mygramamrParser(tokens);
+	              try {
+	                  p.expr();
+	              } 
+	              catch (Exception e) {
+	                  System.err("Should hopefully never happen");
+	              }
 	          }
-	          
+
 
 	public static class program_return extends ParserRuleReturnScope {
 		Object tree;
@@ -105,7 +154,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "program"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:55:1: program : includes decls ( procedure )* main EOF ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:60:1: program : includes decls ( procedure )* main EOF ;
 	public final mygrammarParser.program_return program() throws  {
 		mygrammarParser.program_return retval = new mygrammarParser.program_return();
 		retval.start = input.LT(1);
@@ -120,39 +169,56 @@ public class mygrammarParser extends Parser {
 
 		Object EOF5_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "program");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(60, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:55:9: ( includes decls ( procedure )* main EOF )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:55:11: includes decls ( procedure )* main EOF
+			// /Users/Anya/github/compiler-theory/mygrammar.g:60:9: ( includes decls ( procedure )* main EOF )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:60:11: includes decls ( procedure )* main EOF
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			pushFollow(FOLLOW_includes_in_program560);
+			dbg.location(60,11);
+			pushFollow(FOLLOW_includes_in_program551);
 			includes1=includes();
 			state._fsp--;
 
 			adaptor.addChild(root_0, includes1.getTree());
-
-			pushFollow(FOLLOW_decls_in_program562);
+			dbg.location(60,20);
+			pushFollow(FOLLOW_decls_in_program553);
 			decls2=decls();
 			state._fsp--;
 
 			adaptor.addChild(root_0, decls2.getTree());
+			dbg.location(60,26);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:60:26: ( procedure )*
+			try { dbg.enterSubRule(1);
 
-			// /Users/Anya/github/compiler-theory/mygrammar.g:55:26: ( procedure )*
 			loop1:
 			while (true) {
 				int alt1=2;
+				try { dbg.enterDecision(1, decisionCanBacktrack[1]);
+
 				int LA1_0 = input.LA(1);
 				if ( (LA1_0==ID||LA1_0==35||LA1_0==38) ) {
 					alt1=1;
 				}
 
+				} finally {dbg.exitDecision(1);}
+
 				switch (alt1) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:55:27: procedure
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:60:27: procedure
 					{
-					pushFollow(FOLLOW_procedure_in_program565);
+					dbg.location(60,27);
+					pushFollow(FOLLOW_procedure_in_program556);
 					procedure3=procedure();
 					state._fsp--;
 
@@ -165,14 +231,15 @@ public class mygrammarParser extends Parser {
 					break loop1;
 				}
 			}
-
-			pushFollow(FOLLOW_main_in_program569);
+			} finally {dbg.exitSubRule(1);}
+			dbg.location(60,39);
+			pushFollow(FOLLOW_main_in_program560);
 			main4=main();
 			state._fsp--;
 
 			adaptor.addChild(root_0, main4.getTree());
-
-			EOF5=(Token)match(input,EOF,FOLLOW_EOF_in_program571); 
+			dbg.location(60,44);
+			EOF5=(Token)match(input,EOF,FOLLOW_EOF_in_program562); 
 			EOF5_tree = (Object)adaptor.create(EOF5);
 			adaptor.addChild(root_0, EOF5_tree);
 
@@ -192,6 +259,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(60, 46);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "program");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "program"
@@ -205,7 +281,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "args"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:56:1: args : ( typeident ( COMMA typeident )* )? -> ( ^( ARGS ( typeident ( typeident )* )? ) )? ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:61:1: args : ( typeident ( COMMA typeident )* )? -> ( ^( ARGS ( typeident ( typeident )* )? ) )? ;
 	public final mygrammarParser.args_return args() throws  {
 		mygrammarParser.args_return retval = new mygrammarParser.args_return();
 		retval.start = input.LT(1);
@@ -220,42 +296,67 @@ public class mygrammarParser extends Parser {
 		RewriteRuleTokenStream stream_COMMA=new RewriteRuleTokenStream(adaptor,"token COMMA");
 		RewriteRuleSubtreeStream stream_typeident=new RewriteRuleSubtreeStream(adaptor,"rule typeident");
 
+		try { dbg.enterRule(getGrammarFileName(), "args");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(61, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:56:7: ( ( typeident ( COMMA typeident )* )? -> ( ^( ARGS ( typeident ( typeident )* )? ) )? )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:56:9: ( typeident ( COMMA typeident )* )?
+			// /Users/Anya/github/compiler-theory/mygrammar.g:61:7: ( ( typeident ( COMMA typeident )* )? -> ( ^( ARGS ( typeident ( typeident )* )? ) )? )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:61:9: ( typeident ( COMMA typeident )* )?
 			{
-			// /Users/Anya/github/compiler-theory/mygrammar.g:56:9: ( typeident ( COMMA typeident )* )?
+			dbg.location(61,9);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:61:9: ( typeident ( COMMA typeident )* )?
 			int alt3=2;
+			try { dbg.enterSubRule(3);
+			try { dbg.enterDecision(3, decisionCanBacktrack[3]);
+
 			int LA3_0 = input.LA(1);
 			if ( (LA3_0==35||LA3_0==38) ) {
 				alt3=1;
 			}
+			} finally {dbg.exitDecision(3);}
+
 			switch (alt3) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:56:10: typeident ( COMMA typeident )*
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:61:10: typeident ( COMMA typeident )*
 					{
-					pushFollow(FOLLOW_typeident_in_args580);
+					dbg.location(61,10);
+					pushFollow(FOLLOW_typeident_in_args571);
 					typeident6=typeident();
 					state._fsp--;
 
-					stream_typeident.add(typeident6.getTree());
-					// /Users/Anya/github/compiler-theory/mygrammar.g:56:20: ( COMMA typeident )*
+					stream_typeident.add(typeident6.getTree());dbg.location(61,20);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:61:20: ( COMMA typeident )*
+					try { dbg.enterSubRule(2);
+
 					loop2:
 					while (true) {
 						int alt2=2;
+						try { dbg.enterDecision(2, decisionCanBacktrack[2]);
+
 						int LA2_0 = input.LA(1);
 						if ( (LA2_0==COMMA) ) {
 							alt2=1;
 						}
 
+						} finally {dbg.exitDecision(2);}
+
 						switch (alt2) {
 						case 1 :
-							// /Users/Anya/github/compiler-theory/mygrammar.g:56:21: COMMA typeident
-							{
-							COMMA7=(Token)match(input,COMMA,FOLLOW_COMMA_in_args583);  
-							stream_COMMA.add(COMMA7);
+							dbg.enterAlt(1);
 
-							pushFollow(FOLLOW_typeident_in_args585);
+							// /Users/Anya/github/compiler-theory/mygrammar.g:61:21: COMMA typeident
+							{
+							dbg.location(61,21);
+							COMMA7=(Token)match(input,COMMA,FOLLOW_COMMA_in_args574);  
+							stream_COMMA.add(COMMA7);
+							dbg.location(61,27);
+							pushFollow(FOLLOW_typeident_in_args576);
 							typeident8=typeident();
 							state._fsp--;
 
@@ -267,11 +368,13 @@ public class mygrammarParser extends Parser {
 							break loop2;
 						}
 					}
+					} finally {dbg.exitSubRule(2);}
 
 					}
 					break;
 
 			}
+			} finally {dbg.exitSubRule(3);}
 
 			// AST REWRITE
 			// elements: typeident, typeident
@@ -284,19 +387,25 @@ public class mygrammarParser extends Parser {
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 			root_0 = (Object)adaptor.nil();
-			// 56:41: -> ( ^( ARGS ( typeident ( typeident )* )? ) )?
+			// 61:41: -> ( ^( ARGS ( typeident ( typeident )* )? ) )?
 			{
-				// /Users/Anya/github/compiler-theory/mygrammar.g:56:44: ( ^( ARGS ( typeident ( typeident )* )? ) )?
+				dbg.location(61,44);
+				// /Users/Anya/github/compiler-theory/mygrammar.g:61:44: ( ^( ARGS ( typeident ( typeident )* )? ) )?
 				if ( stream_typeident.hasNext() ) {
-					// /Users/Anya/github/compiler-theory/mygrammar.g:56:44: ^( ARGS ( typeident ( typeident )* )? )
+					dbg.location(61,44);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:61:44: ^( ARGS ( typeident ( typeident )* )? )
 					{
 					Object root_1 = (Object)adaptor.nil();
+					dbg.location(61,46);
 					root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(ARGS, "ARGS"), root_1);
-					// /Users/Anya/github/compiler-theory/mygrammar.g:56:51: ( typeident ( typeident )* )?
+					dbg.location(61,51);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:61:51: ( typeident ( typeident )* )?
 					if ( stream_typeident.hasNext()||stream_typeident.hasNext() ) {
-						adaptor.addChild(root_1, stream_typeident.nextTree());
-						// /Users/Anya/github/compiler-theory/mygrammar.g:56:61: ( typeident )*
+						dbg.location(61,52);
+						adaptor.addChild(root_1, stream_typeident.nextTree());dbg.location(61,61);
+						// /Users/Anya/github/compiler-theory/mygrammar.g:61:61: ( typeident )*
 						while ( stream_typeident.hasNext() ) {
+							dbg.location(61,62);
 							adaptor.addChild(root_1, stream_typeident.nextTree());
 						}
 						stream_typeident.reset();
@@ -332,6 +441,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(61, 76);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "args");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "args"
@@ -345,7 +463,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "includes"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:57:1: includes : ( '#include' STRING )* -> ( ^( INCLS ( STRING )* ) )? ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:62:1: includes : ( '#include' STRING )* -> ( ^( INCLS ( STRING )* ) )? ;
 	public final mygrammarParser.includes_return includes() throws  {
 		mygrammarParser.includes_return retval = new mygrammarParser.includes_return();
 		retval.start = input.LT(1);
@@ -360,27 +478,44 @@ public class mygrammarParser extends Parser {
 		RewriteRuleTokenStream stream_34=new RewriteRuleTokenStream(adaptor,"token 34");
 		RewriteRuleTokenStream stream_STRING=new RewriteRuleTokenStream(adaptor,"token STRING");
 
+		try { dbg.enterRule(getGrammarFileName(), "includes");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(62, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:57:10: ( ( '#include' STRING )* -> ( ^( INCLS ( STRING )* ) )? )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:57:12: ( '#include' STRING )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:62:10: ( ( '#include' STRING )* -> ( ^( INCLS ( STRING )* ) )? )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:62:12: ( '#include' STRING )*
 			{
-			// /Users/Anya/github/compiler-theory/mygrammar.g:57:12: ( '#include' STRING )*
+			dbg.location(62,12);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:62:12: ( '#include' STRING )*
+			try { dbg.enterSubRule(4);
+
 			loop4:
 			while (true) {
 				int alt4=2;
+				try { dbg.enterDecision(4, decisionCanBacktrack[4]);
+
 				int LA4_0 = input.LA(1);
 				if ( (LA4_0==34) ) {
 					alt4=1;
 				}
 
+				} finally {dbg.exitDecision(4);}
+
 				switch (alt4) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:57:13: '#include' STRING
-					{
-					string_literal9=(Token)match(input,34,FOLLOW_34_in_includes613);  
-					stream_34.add(string_literal9);
+					dbg.enterAlt(1);
 
-					STRING10=(Token)match(input,STRING,FOLLOW_STRING_in_includes615);  
+					// /Users/Anya/github/compiler-theory/mygrammar.g:62:13: '#include' STRING
+					{
+					dbg.location(62,13);
+					string_literal9=(Token)match(input,34,FOLLOW_34_in_includes604);  
+					stream_34.add(string_literal9);
+					dbg.location(62,24);
+					STRING10=(Token)match(input,STRING,FOLLOW_STRING_in_includes606);  
 					stream_STRING.add(STRING10);
 
 					}
@@ -390,6 +525,7 @@ public class mygrammarParser extends Parser {
 					break loop4;
 				}
 			}
+			} finally {dbg.exitSubRule(4);}
 
 			// AST REWRITE
 			// elements: STRING
@@ -402,16 +538,21 @@ public class mygrammarParser extends Parser {
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 			root_0 = (Object)adaptor.nil();
-			// 57:33: -> ( ^( INCLS ( STRING )* ) )?
+			// 62:33: -> ( ^( INCLS ( STRING )* ) )?
 			{
-				// /Users/Anya/github/compiler-theory/mygrammar.g:57:36: ( ^( INCLS ( STRING )* ) )?
+				dbg.location(62,36);
+				// /Users/Anya/github/compiler-theory/mygrammar.g:62:36: ( ^( INCLS ( STRING )* ) )?
 				if ( stream_STRING.hasNext() ) {
-					// /Users/Anya/github/compiler-theory/mygrammar.g:57:36: ^( INCLS ( STRING )* )
+					dbg.location(62,36);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:62:36: ^( INCLS ( STRING )* )
 					{
 					Object root_1 = (Object)adaptor.nil();
+					dbg.location(62,38);
 					root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(INCLS, "INCLS"), root_1);
-					// /Users/Anya/github/compiler-theory/mygrammar.g:57:44: ( STRING )*
+					dbg.location(62,44);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:62:44: ( STRING )*
 					while ( stream_STRING.hasNext() ) {
+						dbg.location(62,45);
 						adaptor.addChild(root_1, stream_STRING.nextNode());
 					}
 					stream_STRING.reset();
@@ -443,6 +584,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(62, 54);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "includes");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "includes"
@@ -456,7 +606,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "main"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:58:1: main : 'main' LPAREN RPAREN body -> ^( MAIN body ) ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:63:1: main : 'main' LPAREN RPAREN body -> ^( MAIN body ) ;
 	public final mygrammarParser.main_return main() throws  {
 		mygrammarParser.main_return retval = new mygrammarParser.main_return();
 		retval.start = input.LT(1);
@@ -476,20 +626,28 @@ public class mygrammarParser extends Parser {
 		RewriteRuleTokenStream stream_LPAREN=new RewriteRuleTokenStream(adaptor,"token LPAREN");
 		RewriteRuleSubtreeStream stream_body=new RewriteRuleSubtreeStream(adaptor,"rule body");
 
+		try { dbg.enterRule(getGrammarFileName(), "main");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(63, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:58:6: ( 'main' LPAREN RPAREN body -> ^( MAIN body ) )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:58:8: 'main' LPAREN RPAREN body
+			// /Users/Anya/github/compiler-theory/mygrammar.g:63:6: ( 'main' LPAREN RPAREN body -> ^( MAIN body ) )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:63:8: 'main' LPAREN RPAREN body
 			{
-			string_literal11=(Token)match(input,39,FOLLOW_39_in_main636);  
+			dbg.location(63,8);
+			string_literal11=(Token)match(input,39,FOLLOW_39_in_main627);  
 			stream_39.add(string_literal11);
-
-			LPAREN12=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_main638);  
+			dbg.location(63,15);
+			LPAREN12=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_main629);  
 			stream_LPAREN.add(LPAREN12);
-
-			RPAREN13=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_main640);  
+			dbg.location(63,22);
+			RPAREN13=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_main631);  
 			stream_RPAREN.add(RPAREN13);
-
-			pushFollow(FOLLOW_body_in_main642);
+			dbg.location(63,29);
+			pushFollow(FOLLOW_body_in_main633);
 			body14=body();
 			state._fsp--;
 
@@ -505,12 +663,15 @@ public class mygrammarParser extends Parser {
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 			root_0 = (Object)adaptor.nil();
-			// 58:34: -> ^( MAIN body )
+			// 63:34: -> ^( MAIN body )
 			{
-				// /Users/Anya/github/compiler-theory/mygrammar.g:58:37: ^( MAIN body )
+				dbg.location(63,37);
+				// /Users/Anya/github/compiler-theory/mygrammar.g:63:37: ^( MAIN body )
 				{
 				Object root_1 = (Object)adaptor.nil();
+				dbg.location(63,39);
 				root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(MAIN, "MAIN"), root_1);
+				dbg.location(63,44);
 				adaptor.addChild(root_1, stream_body.nextTree());
 				adaptor.addChild(root_0, root_1);
 				}
@@ -536,6 +697,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(63, 48);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "main");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "main"
@@ -549,7 +719,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "procedure"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:59:1: procedure : ( 'int' | 'char' )? ID ^ LPAREN ! args RPAREN ! body ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:64:1: procedure : ( 'int' | 'char' )? ID ^ LPAREN ! args RPAREN ! body ;
 	public final mygrammarParser.procedure_return procedure() throws  {
 		mygrammarParser.procedure_return retval = new mygrammarParser.procedure_return();
 		retval.start = input.LT(1);
@@ -568,23 +738,39 @@ public class mygrammarParser extends Parser {
 		Object LPAREN17_tree=null;
 		Object RPAREN19_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "procedure");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(64, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:59:11: ( ( 'int' | 'char' )? ID ^ LPAREN ! args RPAREN ! body )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:59:13: ( 'int' | 'char' )? ID ^ LPAREN ! args RPAREN ! body
+			// /Users/Anya/github/compiler-theory/mygrammar.g:64:11: ( ( 'int' | 'char' )? ID ^ LPAREN ! args RPAREN ! body )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:64:13: ( 'int' | 'char' )? ID ^ LPAREN ! args RPAREN ! body
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			// /Users/Anya/github/compiler-theory/mygrammar.g:59:13: ( 'int' | 'char' )?
+			dbg.location(64,13);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:64:13: ( 'int' | 'char' )?
 			int alt5=2;
+			try { dbg.enterSubRule(5);
+			try { dbg.enterDecision(5, decisionCanBacktrack[5]);
+
 			int LA5_0 = input.LA(1);
 			if ( (LA5_0==35||LA5_0==38) ) {
 				alt5=1;
 			}
+			} finally {dbg.exitDecision(5);}
+
 			switch (alt5) {
 				case 1 :
+					dbg.enterAlt(1);
+
 					// /Users/Anya/github/compiler-theory/mygrammar.g:
 					{
+					dbg.location(64,13);
 					set15=input.LT(1);
 					if ( input.LA(1)==35||input.LA(1)==38 ) {
 						input.consume();
@@ -593,26 +779,28 @@ public class mygrammarParser extends Parser {
 					}
 					else {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
+						dbg.recognitionException(mse);
 						throw mse;
 					}
 					}
 					break;
 
 			}
-
-			ID16=(Token)match(input,ID,FOLLOW_ID_in_procedure666); 
+			} finally {dbg.exitSubRule(5);}
+			dbg.location(64,33);
+			ID16=(Token)match(input,ID,FOLLOW_ID_in_procedure657); 
 			ID16_tree = (Object)adaptor.create(ID16);
 			root_0 = (Object)adaptor.becomeRoot(ID16_tree, root_0);
-
-			LPAREN17=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_procedure669); 
-			pushFollow(FOLLOW_args_in_procedure672);
+			dbg.location(64,41);
+			LPAREN17=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_procedure660); dbg.location(64,43);
+			pushFollow(FOLLOW_args_in_procedure663);
 			args18=args();
 			state._fsp--;
 
 			adaptor.addChild(root_0, args18.getTree());
-
-			RPAREN19=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_procedure674); 
-			pushFollow(FOLLOW_body_in_procedure677);
+			dbg.location(64,54);
+			RPAREN19=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_procedure665); dbg.location(64,56);
+			pushFollow(FOLLOW_body_in_procedure668);
 			body20=body();
 			state._fsp--;
 
@@ -634,6 +822,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(64, 59);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "procedure");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "procedure"
@@ -647,7 +844,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "typeident"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:60:1: typeident : ( 'int' ^ ID | 'char' ^ ID );
+	// /Users/Anya/github/compiler-theory/mygrammar.g:65:1: typeident : ( 'int' ^ ID | 'char' ^ ID );
 	public final mygrammarParser.typeident_return typeident() throws  {
 		mygrammarParser.typeident_return retval = new mygrammarParser.typeident_return();
 		retval.start = input.LT(1);
@@ -664,9 +861,16 @@ public class mygrammarParser extends Parser {
 		Object string_literal23_tree=null;
 		Object ID24_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "typeident");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(65, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:60:11: ( 'int' ^ ID | 'char' ^ ID )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:65:11: ( 'int' ^ ID | 'char' ^ ID )
 			int alt6=2;
+			try { dbg.enterDecision(6, decisionCanBacktrack[6]);
+
 			int LA6_0 = input.LA(1);
 			if ( (LA6_0==38) ) {
 				alt6=1;
@@ -678,37 +882,46 @@ public class mygrammarParser extends Parser {
 			else {
 				NoViableAltException nvae =
 					new NoViableAltException("", 6, 0, input);
+				dbg.recognitionException(nvae);
 				throw nvae;
 			}
 
+			} finally {dbg.exitDecision(6);}
+
 			switch (alt6) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:60:13: 'int' ^ ID
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:65:13: 'int' ^ ID
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					string_literal21=(Token)match(input,38,FOLLOW_38_in_typeident684); 
+					dbg.location(65,18);
+					string_literal21=(Token)match(input,38,FOLLOW_38_in_typeident675); 
 					string_literal21_tree = (Object)adaptor.create(string_literal21);
 					root_0 = (Object)adaptor.becomeRoot(string_literal21_tree, root_0);
-
-					ID22=(Token)match(input,ID,FOLLOW_ID_in_typeident687); 
+					dbg.location(65,20);
+					ID22=(Token)match(input,ID,FOLLOW_ID_in_typeident678); 
 					ID22_tree = (Object)adaptor.create(ID22);
 					adaptor.addChild(root_0, ID22_tree);
 
 					}
 					break;
 				case 2 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:60:25: 'char' ^ ID
+					dbg.enterAlt(2);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:65:25: 'char' ^ ID
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					string_literal23=(Token)match(input,35,FOLLOW_35_in_typeident691); 
+					dbg.location(65,31);
+					string_literal23=(Token)match(input,35,FOLLOW_35_in_typeident682); 
 					string_literal23_tree = (Object)adaptor.create(string_literal23);
 					root_0 = (Object)adaptor.becomeRoot(string_literal23_tree, root_0);
-
-					ID24=(Token)match(input,ID,FOLLOW_ID_in_typeident694); 
+					dbg.location(65,33);
+					ID24=(Token)match(input,ID,FOLLOW_ID_in_typeident685); 
 					ID24_tree = (Object)adaptor.create(ID24);
 					adaptor.addChild(root_0, ID24_tree);
 
@@ -730,6 +943,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(65, 34);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "typeident");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "typeident"
@@ -743,7 +965,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "decls"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:61:1: decls : ( typeident SEMICOLON )* -> ( ^( DECS ( typeident )* ) )? ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:66:1: decls : ( typeident SEMICOLON )* -> ( ^( DECS ( typeident )* ) )? ;
 	public final mygrammarParser.decls_return decls() throws  {
 		mygrammarParser.decls_return retval = new mygrammarParser.decls_return();
 		retval.start = input.LT(1);
@@ -757,14 +979,26 @@ public class mygrammarParser extends Parser {
 		RewriteRuleTokenStream stream_SEMICOLON=new RewriteRuleTokenStream(adaptor,"token SEMICOLON");
 		RewriteRuleSubtreeStream stream_typeident=new RewriteRuleSubtreeStream(adaptor,"rule typeident");
 
+		try { dbg.enterRule(getGrammarFileName(), "decls");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(66, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:61:8: ( ( typeident SEMICOLON )* -> ( ^( DECS ( typeident )* ) )? )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:61:10: ( typeident SEMICOLON )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:66:8: ( ( typeident SEMICOLON )* -> ( ^( DECS ( typeident )* ) )? )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:66:10: ( typeident SEMICOLON )*
 			{
-			// /Users/Anya/github/compiler-theory/mygrammar.g:61:10: ( typeident SEMICOLON )*
+			dbg.location(66,10);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:66:10: ( typeident SEMICOLON )*
+			try { dbg.enterSubRule(7);
+
 			loop7:
 			while (true) {
 				int alt7=2;
+				try { dbg.enterDecision(7, decisionCanBacktrack[7]);
+
 				int LA7_0 = input.LA(1);
 				if ( (LA7_0==38) ) {
 					int LA7_1 = input.LA(2);
@@ -789,16 +1023,21 @@ public class mygrammarParser extends Parser {
 
 				}
 
+				} finally {dbg.exitDecision(7);}
+
 				switch (alt7) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:61:11: typeident SEMICOLON
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:66:11: typeident SEMICOLON
 					{
-					pushFollow(FOLLOW_typeident_in_decls703);
+					dbg.location(66,11);
+					pushFollow(FOLLOW_typeident_in_decls694);
 					typeident25=typeident();
 					state._fsp--;
 
-					stream_typeident.add(typeident25.getTree());
-					SEMICOLON26=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_decls705);  
+					stream_typeident.add(typeident25.getTree());dbg.location(66,21);
+					SEMICOLON26=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_decls696);  
 					stream_SEMICOLON.add(SEMICOLON26);
 
 					}
@@ -808,6 +1047,7 @@ public class mygrammarParser extends Parser {
 					break loop7;
 				}
 			}
+			} finally {dbg.exitSubRule(7);}
 
 			// AST REWRITE
 			// elements: typeident
@@ -820,16 +1060,21 @@ public class mygrammarParser extends Parser {
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 			root_0 = (Object)adaptor.nil();
-			// 61:33: -> ( ^( DECS ( typeident )* ) )?
+			// 66:33: -> ( ^( DECS ( typeident )* ) )?
 			{
-				// /Users/Anya/github/compiler-theory/mygrammar.g:61:36: ( ^( DECS ( typeident )* ) )?
+				dbg.location(66,36);
+				// /Users/Anya/github/compiler-theory/mygrammar.g:66:36: ( ^( DECS ( typeident )* ) )?
 				if ( stream_typeident.hasNext() ) {
-					// /Users/Anya/github/compiler-theory/mygrammar.g:61:36: ^( DECS ( typeident )* )
+					dbg.location(66,36);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:66:36: ^( DECS ( typeident )* )
 					{
 					Object root_1 = (Object)adaptor.nil();
+					dbg.location(66,38);
 					root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(DECS, "DECS"), root_1);
-					// /Users/Anya/github/compiler-theory/mygrammar.g:61:43: ( typeident )*
+					dbg.location(66,43);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:66:43: ( typeident )*
 					while ( stream_typeident.hasNext() ) {
+						dbg.location(66,44);
 						adaptor.addChild(root_1, stream_typeident.nextTree());
 					}
 					stream_typeident.reset();
@@ -861,6 +1106,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(66, 56);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "decls");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "decls"
@@ -874,7 +1128,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "stmt"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:62:1: stmt : ( LBRACE ! stmtlist RBRACE !| 'while' LPAREN exp RPAREN stmt -> ^( 'while' ^( EXPR exp ) stmt ) | 'if' LPAREN exp RPAREN s= stmt ( options {greedy=true; } : 'else' s2= stmt )? -> ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? ) | ID ASSIGN ^ lexp SEMICOLON !| ( 'read' | 'readc' | 'output' | 'outputc' ) ^ LPAREN ! ID RPAREN ! SEMICOLON !| 'print' ^ LPAREN ! STRING RPAREN ! SEMICOLON !| 'return' ^ ( lexp )? SEMICOLON !| ID ^ LPAREN ! ID ( COMMA ! ID )* RPAREN ! SEMICOLON !);
+	// /Users/Anya/github/compiler-theory/mygrammar.g:67:1: stmt : ( LBRACE ! stmtlist RBRACE !| 'while' LPAREN exp RPAREN stmt -> ^( 'while' ^( EXPR exp ) stmt ) | 'if' LPAREN exp RPAREN s= stmt ( options {greedy=true; } : 'else' s2= stmt )? -> ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? ) | ID ASSIGN ^ lexp SEMICOLON !| ( 'read' | 'readc' | 'output' | 'outputc' ) ^ LPAREN ! ID RPAREN ! SEMICOLON !| 'print' ^ LPAREN ! STRING RPAREN ! SEMICOLON !| 'return' ^ ( lexp )? SEMICOLON !| ID ^ LPAREN ! ID ( COMMA ! ID )* RPAREN ! SEMICOLON !);
 	public final mygrammarParser.stmt_return stmt() throws  {
 		mygrammarParser.stmt_return retval = new mygrammarParser.stmt_return();
 		retval.start = input.LT(1);
@@ -960,9 +1214,16 @@ public class mygrammarParser extends Parser {
 		RewriteRuleSubtreeStream stream_exp=new RewriteRuleSubtreeStream(adaptor,"rule exp");
 		RewriteRuleSubtreeStream stream_stmt=new RewriteRuleSubtreeStream(adaptor,"rule stmt");
 
+		try { dbg.enterRule(getGrammarFileName(), "stmt");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(67, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:62:6: ( LBRACE ! stmtlist RBRACE !| 'while' LPAREN exp RPAREN stmt -> ^( 'while' ^( EXPR exp ) stmt ) | 'if' LPAREN exp RPAREN s= stmt ( options {greedy=true; } : 'else' s2= stmt )? -> ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? ) | ID ASSIGN ^ lexp SEMICOLON !| ( 'read' | 'readc' | 'output' | 'outputc' ) ^ LPAREN ! ID RPAREN ! SEMICOLON !| 'print' ^ LPAREN ! STRING RPAREN ! SEMICOLON !| 'return' ^ ( lexp )? SEMICOLON !| ID ^ LPAREN ! ID ( COMMA ! ID )* RPAREN ! SEMICOLON !)
+			// /Users/Anya/github/compiler-theory/mygrammar.g:67:6: ( LBRACE ! stmtlist RBRACE !| 'while' LPAREN exp RPAREN stmt -> ^( 'while' ^( EXPR exp ) stmt ) | 'if' LPAREN exp RPAREN s= stmt ( options {greedy=true; } : 'else' s2= stmt )? -> ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? ) | ID ASSIGN ^ lexp SEMICOLON !| ( 'read' | 'readc' | 'output' | 'outputc' ) ^ LPAREN ! ID RPAREN ! SEMICOLON !| 'print' ^ LPAREN ! STRING RPAREN ! SEMICOLON !| 'return' ^ ( lexp )? SEMICOLON !| ID ^ LPAREN ! ID ( COMMA ! ID )* RPAREN ! SEMICOLON !)
 			int alt11=8;
+			try { dbg.enterDecision(11, decisionCanBacktrack[11]);
+
 			switch ( input.LA(1) ) {
 			case LBRACE:
 				{
@@ -995,6 +1256,7 @@ public class mygrammarParser extends Parser {
 						input.consume();
 						NoViableAltException nvae =
 							new NoViableAltException("", 11, 4, input);
+						dbg.recognitionException(nvae);
 						throw nvae;
 					} finally {
 						input.rewind(nvaeMark);
@@ -1024,49 +1286,58 @@ public class mygrammarParser extends Parser {
 			default:
 				NoViableAltException nvae =
 					new NoViableAltException("", 11, 0, input);
+				dbg.recognitionException(nvae);
 				throw nvae;
 			}
+			} finally {dbg.exitDecision(11);}
+
 			switch (alt11) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:62:8: LBRACE ! stmtlist RBRACE !
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:67:8: LBRACE ! stmtlist RBRACE !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					LBRACE27=(Token)match(input,LBRACE,FOLLOW_LBRACE_in_stmt726); 
-					pushFollow(FOLLOW_stmtlist_in_stmt729);
+					dbg.location(67,14);
+					LBRACE27=(Token)match(input,LBRACE,FOLLOW_LBRACE_in_stmt717); dbg.location(67,16);
+					pushFollow(FOLLOW_stmtlist_in_stmt720);
 					stmtlist28=stmtlist();
 					state._fsp--;
 
 					adaptor.addChild(root_0, stmtlist28.getTree());
-
-					RBRACE29=(Token)match(input,RBRACE,FOLLOW_RBRACE_in_stmt731); 
+					dbg.location(67,31);
+					RBRACE29=(Token)match(input,RBRACE,FOLLOW_RBRACE_in_stmt722); 
 					}
 					break;
 				case 2 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:63:8: 'while' LPAREN exp RPAREN stmt
+					dbg.enterAlt(2);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:68:8: 'while' LPAREN exp RPAREN stmt
 					{
-					string_literal30=(Token)match(input,46,FOLLOW_46_in_stmt741);  
+					dbg.location(68,8);
+					string_literal30=(Token)match(input,46,FOLLOW_46_in_stmt732);  
 					stream_46.add(string_literal30);
-
-					LPAREN31=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt743);  
+					dbg.location(68,16);
+					LPAREN31=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt734);  
 					stream_LPAREN.add(LPAREN31);
-
-					pushFollow(FOLLOW_exp_in_stmt745);
+					dbg.location(68,23);
+					pushFollow(FOLLOW_exp_in_stmt736);
 					exp32=exp();
 					state._fsp--;
 
-					stream_exp.add(exp32.getTree());
-					RPAREN33=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt747);  
+					stream_exp.add(exp32.getTree());dbg.location(68,27);
+					RPAREN33=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt738);  
 					stream_RPAREN.add(RPAREN33);
-
-					pushFollow(FOLLOW_stmt_in_stmt749);
+					dbg.location(68,34);
+					pushFollow(FOLLOW_stmt_in_stmt740);
 					stmt34=stmt();
 					state._fsp--;
 
 					stream_stmt.add(stmt34.getTree());
 					// AST REWRITE
-					// elements: 46, exp, stmt
+					// elements: stmt, 46, exp
 					// token labels: 
 					// rule labels: retval
 					// token list labels: 
@@ -1076,20 +1347,25 @@ public class mygrammarParser extends Parser {
 					RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 					root_0 = (Object)adaptor.nil();
-					// 63:39: -> ^( 'while' ^( EXPR exp ) stmt )
+					// 68:39: -> ^( 'while' ^( EXPR exp ) stmt )
 					{
-						// /Users/Anya/github/compiler-theory/mygrammar.g:63:42: ^( 'while' ^( EXPR exp ) stmt )
+						dbg.location(68,42);
+						// /Users/Anya/github/compiler-theory/mygrammar.g:68:42: ^( 'while' ^( EXPR exp ) stmt )
 						{
 						Object root_1 = (Object)adaptor.nil();
+						dbg.location(68,44);
 						root_1 = (Object)adaptor.becomeRoot(stream_46.nextNode(), root_1);
-						// /Users/Anya/github/compiler-theory/mygrammar.g:63:52: ^( EXPR exp )
+						dbg.location(68,52);
+						// /Users/Anya/github/compiler-theory/mygrammar.g:68:52: ^( EXPR exp )
 						{
 						Object root_2 = (Object)adaptor.nil();
+						dbg.location(68,54);
 						root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(EXPR, "EXPR"), root_2);
+						dbg.location(68,59);
 						adaptor.addChild(root_2, stream_exp.nextTree());
 						adaptor.addChild(root_1, root_2);
 						}
-
+						dbg.location(68,64);
 						adaptor.addChild(root_1, stream_stmt.nextTree());
 						adaptor.addChild(root_0, root_1);
 						}
@@ -1102,41 +1378,52 @@ public class mygrammarParser extends Parser {
 					}
 					break;
 				case 3 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:64:8: 'if' LPAREN exp RPAREN s= stmt ( options {greedy=true; } : 'else' s2= stmt )?
+					dbg.enterAlt(3);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:69:8: 'if' LPAREN exp RPAREN s= stmt ( options {greedy=true; } : 'else' s2= stmt )?
 					{
-					string_literal35=(Token)match(input,37,FOLLOW_37_in_stmt772);  
+					dbg.location(69,8);
+					string_literal35=(Token)match(input,37,FOLLOW_37_in_stmt763);  
 					stream_37.add(string_literal35);
-
-					LPAREN36=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt774);  
+					dbg.location(69,13);
+					LPAREN36=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt765);  
 					stream_LPAREN.add(LPAREN36);
-
-					pushFollow(FOLLOW_exp_in_stmt776);
+					dbg.location(69,20);
+					pushFollow(FOLLOW_exp_in_stmt767);
 					exp37=exp();
 					state._fsp--;
 
-					stream_exp.add(exp37.getTree());
-					RPAREN38=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt778);  
+					stream_exp.add(exp37.getTree());dbg.location(69,24);
+					RPAREN38=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt769);  
 					stream_RPAREN.add(RPAREN38);
-
-					pushFollow(FOLLOW_stmt_in_stmt782);
+					dbg.location(69,32);
+					pushFollow(FOLLOW_stmt_in_stmt773);
 					s=stmt();
 					state._fsp--;
 
-					stream_stmt.add(s.getTree());
-					// /Users/Anya/github/compiler-theory/mygrammar.g:64:38: ( options {greedy=true; } : 'else' s2= stmt )?
+					stream_stmt.add(s.getTree());dbg.location(69,38);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:69:38: ( options {greedy=true; } : 'else' s2= stmt )?
 					int alt8=2;
+					try { dbg.enterSubRule(8);
+					try { dbg.enterDecision(8, decisionCanBacktrack[8]);
+
 					int LA8_0 = input.LA(1);
 					if ( (LA8_0==36) ) {
 						alt8=1;
 					}
+					} finally {dbg.exitDecision(8);}
+
 					switch (alt8) {
 						case 1 :
-							// /Users/Anya/github/compiler-theory/mygrammar.g:64:64: 'else' s2= stmt
-							{
-							string_literal39=(Token)match(input,36,FOLLOW_36_in_stmt794);  
-							stream_36.add(string_literal39);
+							dbg.enterAlt(1);
 
-							pushFollow(FOLLOW_stmt_in_stmt798);
+							// /Users/Anya/github/compiler-theory/mygrammar.g:69:64: 'else' s2= stmt
+							{
+							dbg.location(69,64);
+							string_literal39=(Token)match(input,36,FOLLOW_36_in_stmt785);  
+							stream_36.add(string_literal39);
+							dbg.location(69,73);
+							pushFollow(FOLLOW_stmt_in_stmt789);
 							s2=stmt();
 							state._fsp--;
 
@@ -1145,9 +1432,10 @@ public class mygrammarParser extends Parser {
 							break;
 
 					}
+					} finally {dbg.exitSubRule(8);}
 
 					// AST REWRITE
-					// elements: s2, exp, 37, s, 36
+					// elements: s, s2, 37, exp, 36
 					// token labels: 
 					// rule labels: retval, s2, s
 					// token list labels: 
@@ -1159,27 +1447,35 @@ public class mygrammarParser extends Parser {
 					RewriteRuleSubtreeStream stream_s=new RewriteRuleSubtreeStream(adaptor,"rule s",s!=null?s.getTree():null);
 
 					root_0 = (Object)adaptor.nil();
-					// 64:81: -> ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? )
+					// 69:81: -> ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? )
 					{
-						// /Users/Anya/github/compiler-theory/mygrammar.g:64:84: ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? )
+						dbg.location(69,84);
+						// /Users/Anya/github/compiler-theory/mygrammar.g:69:84: ^( 'if' ^( EXPR exp ) $s ( ^( 'else' $s2) )? )
 						{
 						Object root_1 = (Object)adaptor.nil();
+						dbg.location(69,86);
 						root_1 = (Object)adaptor.becomeRoot(stream_37.nextNode(), root_1);
-						// /Users/Anya/github/compiler-theory/mygrammar.g:64:91: ^( EXPR exp )
+						dbg.location(69,91);
+						// /Users/Anya/github/compiler-theory/mygrammar.g:69:91: ^( EXPR exp )
 						{
 						Object root_2 = (Object)adaptor.nil();
+						dbg.location(69,93);
 						root_2 = (Object)adaptor.becomeRoot((Object)adaptor.create(EXPR, "EXPR"), root_2);
+						dbg.location(69,98);
 						adaptor.addChild(root_2, stream_exp.nextTree());
 						adaptor.addChild(root_1, root_2);
 						}
-
-						adaptor.addChild(root_1, stream_s.nextTree());
-						// /Users/Anya/github/compiler-theory/mygrammar.g:64:106: ( ^( 'else' $s2) )?
+						dbg.location(69,104);
+						adaptor.addChild(root_1, stream_s.nextTree());dbg.location(69,106);
+						// /Users/Anya/github/compiler-theory/mygrammar.g:69:106: ( ^( 'else' $s2) )?
 						if ( stream_s2.hasNext()||stream_36.hasNext() ) {
-							// /Users/Anya/github/compiler-theory/mygrammar.g:64:106: ^( 'else' $s2)
+							dbg.location(69,106);
+							// /Users/Anya/github/compiler-theory/mygrammar.g:69:106: ^( 'else' $s2)
 							{
 							Object root_2 = (Object)adaptor.nil();
+							dbg.location(69,108);
 							root_2 = (Object)adaptor.becomeRoot(stream_36.nextNode(), root_2);
+							dbg.location(69,116);
 							adaptor.addChild(root_2, stream_s2.nextTree());
 							adaptor.addChild(root_1, root_2);
 							}
@@ -1199,34 +1495,40 @@ public class mygrammarParser extends Parser {
 					}
 					break;
 				case 4 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:65:8: ID ASSIGN ^ lexp SEMICOLON !
+					dbg.enterAlt(4);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:70:8: ID ASSIGN ^ lexp SEMICOLON !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					ID40=(Token)match(input,ID,FOLLOW_ID_in_stmt832); 
+					dbg.location(70,8);
+					ID40=(Token)match(input,ID,FOLLOW_ID_in_stmt823); 
 					ID40_tree = (Object)adaptor.create(ID40);
 					adaptor.addChild(root_0, ID40_tree);
-
-					ASSIGN41=(Token)match(input,ASSIGN,FOLLOW_ASSIGN_in_stmt834); 
+					dbg.location(70,17);
+					ASSIGN41=(Token)match(input,ASSIGN,FOLLOW_ASSIGN_in_stmt825); 
 					ASSIGN41_tree = (Object)adaptor.create(ASSIGN41);
 					root_0 = (Object)adaptor.becomeRoot(ASSIGN41_tree, root_0);
-
-					pushFollow(FOLLOW_lexp_in_stmt837);
+					dbg.location(70,19);
+					pushFollow(FOLLOW_lexp_in_stmt828);
 					lexp42=lexp();
 					state._fsp--;
 
 					adaptor.addChild(root_0, lexp42.getTree());
-
-					SEMICOLON43=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt839); 
+					dbg.location(70,33);
+					SEMICOLON43=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt830); 
 					}
 					break;
 				case 5 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:66:8: ( 'read' | 'readc' | 'output' | 'outputc' ) ^ LPAREN ! ID RPAREN ! SEMICOLON !
+					dbg.enterAlt(5);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:71:8: ( 'read' | 'readc' | 'output' | 'outputc' ) ^ LPAREN ! ID RPAREN ! SEMICOLON !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
+					dbg.location(71,49);
 					set44=input.LT(1);
 					set44=input.LT(1);
 					if ( (input.LA(1) >= 40 && input.LA(1) <= 41)||(input.LA(1) >= 43 && input.LA(1) <= 44) ) {
@@ -1236,57 +1538,72 @@ public class mygrammarParser extends Parser {
 					}
 					else {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
+						dbg.recognitionException(mse);
 						throw mse;
-					}
-					LPAREN45=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt866); 
-					ID46=(Token)match(input,ID,FOLLOW_ID_in_stmt869); 
+					}dbg.location(71,57);
+					LPAREN45=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt857); dbg.location(71,59);
+					ID46=(Token)match(input,ID,FOLLOW_ID_in_stmt860); 
 					ID46_tree = (Object)adaptor.create(ID46);
 					adaptor.addChild(root_0, ID46_tree);
-
-					RPAREN47=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt871); 
-					SEMICOLON48=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt874); 
+					dbg.location(71,68);
+					RPAREN47=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt862); dbg.location(71,79);
+					SEMICOLON48=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt865); 
 					}
 					break;
 				case 6 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:67:8: 'print' ^ LPAREN ! STRING RPAREN ! SEMICOLON !
+					dbg.enterAlt(6);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:72:8: 'print' ^ LPAREN ! STRING RPAREN ! SEMICOLON !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					string_literal49=(Token)match(input,42,FOLLOW_42_in_stmt884); 
+					dbg.location(72,15);
+					string_literal49=(Token)match(input,42,FOLLOW_42_in_stmt875); 
 					string_literal49_tree = (Object)adaptor.create(string_literal49);
 					root_0 = (Object)adaptor.becomeRoot(string_literal49_tree, root_0);
-
-					LPAREN50=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt887); 
-					STRING51=(Token)match(input,STRING,FOLLOW_STRING_in_stmt890); 
+					dbg.location(72,23);
+					LPAREN50=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt878); dbg.location(72,25);
+					STRING51=(Token)match(input,STRING,FOLLOW_STRING_in_stmt881); 
 					STRING51_tree = (Object)adaptor.create(STRING51);
 					adaptor.addChild(root_0, STRING51_tree);
-
-					RPAREN52=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt892); 
-					SEMICOLON53=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt895); 
+					dbg.location(72,38);
+					RPAREN52=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt883); dbg.location(72,49);
+					SEMICOLON53=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt886); 
 					}
 					break;
 				case 7 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:68:8: 'return' ^ ( lexp )? SEMICOLON !
+					dbg.enterAlt(7);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:73:8: 'return' ^ ( lexp )? SEMICOLON !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					string_literal54=(Token)match(input,45,FOLLOW_45_in_stmt905); 
+					dbg.location(73,16);
+					string_literal54=(Token)match(input,45,FOLLOW_45_in_stmt896); 
 					string_literal54_tree = (Object)adaptor.create(string_literal54);
 					root_0 = (Object)adaptor.becomeRoot(string_literal54_tree, root_0);
-
-					// /Users/Anya/github/compiler-theory/mygrammar.g:68:18: ( lexp )?
+					dbg.location(73,18);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:73:18: ( lexp )?
 					int alt9=2;
+					try { dbg.enterSubRule(9);
+					try { dbg.enterDecision(9, decisionCanBacktrack[9]);
+
 					int LA9_0 = input.LA(1);
 					if ( (LA9_0==CHAR||LA9_0==ID||LA9_0==LPAREN||LA9_0==MINUS||LA9_0==NUMBER) ) {
 						alt9=1;
 					}
+					} finally {dbg.exitDecision(9);}
+
 					switch (alt9) {
 						case 1 :
-							// /Users/Anya/github/compiler-theory/mygrammar.g:68:19: lexp
+							dbg.enterAlt(1);
+
+							// /Users/Anya/github/compiler-theory/mygrammar.g:73:19: lexp
 							{
-							pushFollow(FOLLOW_lexp_in_stmt909);
+							dbg.location(73,19);
+							pushFollow(FOLLOW_lexp_in_stmt900);
 							lexp55=lexp();
 							state._fsp--;
 
@@ -1296,40 +1613,53 @@ public class mygrammarParser extends Parser {
 							break;
 
 					}
-
-					SEMICOLON56=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt913); 
+					} finally {dbg.exitSubRule(9);}
+					dbg.location(73,35);
+					SEMICOLON56=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt904); 
 					}
 					break;
 				case 8 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:69:8: ID ^ LPAREN ! ID ( COMMA ! ID )* RPAREN ! SEMICOLON !
+					dbg.enterAlt(8);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:74:8: ID ^ LPAREN ! ID ( COMMA ! ID )* RPAREN ! SEMICOLON !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					ID57=(Token)match(input,ID,FOLLOW_ID_in_stmt923); 
+					dbg.location(74,10);
+					ID57=(Token)match(input,ID,FOLLOW_ID_in_stmt914); 
 					ID57_tree = (Object)adaptor.create(ID57);
 					root_0 = (Object)adaptor.becomeRoot(ID57_tree, root_0);
-
-					LPAREN58=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt926); 
-					ID59=(Token)match(input,ID,FOLLOW_ID_in_stmt929); 
+					dbg.location(74,18);
+					LPAREN58=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_stmt917); dbg.location(74,20);
+					ID59=(Token)match(input,ID,FOLLOW_ID_in_stmt920); 
 					ID59_tree = (Object)adaptor.create(ID59);
 					adaptor.addChild(root_0, ID59_tree);
+					dbg.location(74,23);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:74:23: ( COMMA ! ID )*
+					try { dbg.enterSubRule(10);
 
-					// /Users/Anya/github/compiler-theory/mygrammar.g:69:23: ( COMMA ! ID )*
 					loop10:
 					while (true) {
 						int alt10=2;
+						try { dbg.enterDecision(10, decisionCanBacktrack[10]);
+
 						int LA10_0 = input.LA(1);
 						if ( (LA10_0==COMMA) ) {
 							alt10=1;
 						}
 
+						} finally {dbg.exitDecision(10);}
+
 						switch (alt10) {
 						case 1 :
-							// /Users/Anya/github/compiler-theory/mygrammar.g:69:24: COMMA ! ID
+							dbg.enterAlt(1);
+
+							// /Users/Anya/github/compiler-theory/mygrammar.g:74:24: COMMA ! ID
 							{
-							COMMA60=(Token)match(input,COMMA,FOLLOW_COMMA_in_stmt932); 
-							ID61=(Token)match(input,ID,FOLLOW_ID_in_stmt935); 
+							dbg.location(74,29);
+							COMMA60=(Token)match(input,COMMA,FOLLOW_COMMA_in_stmt923); dbg.location(74,31);
+							ID61=(Token)match(input,ID,FOLLOW_ID_in_stmt926); 
 							ID61_tree = (Object)adaptor.create(ID61);
 							adaptor.addChild(root_0, ID61_tree);
 
@@ -1340,9 +1670,10 @@ public class mygrammarParser extends Parser {
 							break loop10;
 						}
 					}
-
-					RPAREN62=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt939); 
-					SEMICOLON63=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt942); 
+					} finally {dbg.exitSubRule(10);}
+					dbg.location(74,42);
+					RPAREN62=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_stmt930); dbg.location(74,53);
+					SEMICOLON63=(Token)match(input,SEMICOLON,FOLLOW_SEMICOLON_in_stmt933); 
 					}
 					break;
 
@@ -1361,6 +1692,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(74, 53);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "stmt");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "stmt"
@@ -1374,7 +1714,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "stmtlist"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:70:1: stmtlist : ( stmt )* -> ( ^( STMTS ( stmt )* ) )? ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:75:1: stmtlist : ( stmt )* -> ( ^( STMTS ( stmt )* ) )? ;
 	public final mygrammarParser.stmtlist_return stmtlist() throws  {
 		mygrammarParser.stmtlist_return retval = new mygrammarParser.stmtlist_return();
 		retval.start = input.LT(1);
@@ -1385,24 +1725,41 @@ public class mygrammarParser extends Parser {
 
 		RewriteRuleSubtreeStream stream_stmt=new RewriteRuleSubtreeStream(adaptor,"rule stmt");
 
+		try { dbg.enterRule(getGrammarFileName(), "stmtlist");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(75, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:70:10: ( ( stmt )* -> ( ^( STMTS ( stmt )* ) )? )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:70:12: ( stmt )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:75:10: ( ( stmt )* -> ( ^( STMTS ( stmt )* ) )? )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:75:12: ( stmt )*
 			{
-			// /Users/Anya/github/compiler-theory/mygrammar.g:70:12: ( stmt )*
+			dbg.location(75,12);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:75:12: ( stmt )*
+			try { dbg.enterSubRule(12);
+
 			loop12:
 			while (true) {
 				int alt12=2;
+				try { dbg.enterDecision(12, decisionCanBacktrack[12]);
+
 				int LA12_0 = input.LA(1);
 				if ( (LA12_0==ID||LA12_0==LBRACE||LA12_0==37||(LA12_0 >= 40 && LA12_0 <= 46)) ) {
 					alt12=1;
 				}
 
+				} finally {dbg.exitDecision(12);}
+
 				switch (alt12) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:70:13: stmt
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:75:13: stmt
 					{
-					pushFollow(FOLLOW_stmt_in_stmtlist951);
+					dbg.location(75,13);
+					pushFollow(FOLLOW_stmt_in_stmtlist942);
 					stmt64=stmt();
 					state._fsp--;
 
@@ -1414,6 +1771,7 @@ public class mygrammarParser extends Parser {
 					break loop12;
 				}
 			}
+			} finally {dbg.exitSubRule(12);}
 
 			// AST REWRITE
 			// elements: stmt
@@ -1426,16 +1784,21 @@ public class mygrammarParser extends Parser {
 			RewriteRuleSubtreeStream stream_retval=new RewriteRuleSubtreeStream(adaptor,"rule retval",retval!=null?retval.getTree():null);
 
 			root_0 = (Object)adaptor.nil();
-			// 70:20: -> ( ^( STMTS ( stmt )* ) )?
+			// 75:20: -> ( ^( STMTS ( stmt )* ) )?
 			{
-				// /Users/Anya/github/compiler-theory/mygrammar.g:70:23: ( ^( STMTS ( stmt )* ) )?
+				dbg.location(75,23);
+				// /Users/Anya/github/compiler-theory/mygrammar.g:75:23: ( ^( STMTS ( stmt )* ) )?
 				if ( stream_stmt.hasNext() ) {
-					// /Users/Anya/github/compiler-theory/mygrammar.g:70:23: ^( STMTS ( stmt )* )
+					dbg.location(75,23);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:75:23: ^( STMTS ( stmt )* )
 					{
 					Object root_1 = (Object)adaptor.nil();
+					dbg.location(75,25);
 					root_1 = (Object)adaptor.becomeRoot((Object)adaptor.create(STMTS, "STMTS"), root_1);
-					// /Users/Anya/github/compiler-theory/mygrammar.g:70:31: ( stmt )*
+					dbg.location(75,31);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:75:31: ( stmt )*
 					while ( stream_stmt.hasNext() ) {
+						dbg.location(75,32);
 						adaptor.addChild(root_1, stream_stmt.nextTree());
 					}
 					stream_stmt.reset();
@@ -1467,6 +1830,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(75, 39);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "stmtlist");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "stmtlist"
@@ -1480,7 +1852,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "body"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:71:1: body : LBRACE ! decls stmtlist RBRACE !;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:76:1: body : LBRACE ! decls stmtlist RBRACE !;
 	public final mygrammarParser.body_return body() throws  {
 		mygrammarParser.body_return retval = new mygrammarParser.body_return();
 		retval.start = input.LT(1);
@@ -1495,27 +1867,35 @@ public class mygrammarParser extends Parser {
 		Object LBRACE65_tree=null;
 		Object RBRACE68_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "body");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(76, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:71:7: ( LBRACE ! decls stmtlist RBRACE !)
-			// /Users/Anya/github/compiler-theory/mygrammar.g:71:9: LBRACE ! decls stmtlist RBRACE !
+			// /Users/Anya/github/compiler-theory/mygrammar.g:76:7: ( LBRACE ! decls stmtlist RBRACE !)
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:76:9: LBRACE ! decls stmtlist RBRACE !
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			LBRACE65=(Token)match(input,LBRACE,FOLLOW_LBRACE_in_body975); 
-			pushFollow(FOLLOW_decls_in_body978);
+			dbg.location(76,15);
+			LBRACE65=(Token)match(input,LBRACE,FOLLOW_LBRACE_in_body966); dbg.location(76,17);
+			pushFollow(FOLLOW_decls_in_body969);
 			decls66=decls();
 			state._fsp--;
 
 			adaptor.addChild(root_0, decls66.getTree());
-
-			pushFollow(FOLLOW_stmtlist_in_body980);
+			dbg.location(76,23);
+			pushFollow(FOLLOW_stmtlist_in_body971);
 			stmtlist67=stmtlist();
 			state._fsp--;
 
 			adaptor.addChild(root_0, stmtlist67.getTree());
-
-			RBRACE68=(Token)match(input,RBRACE,FOLLOW_RBRACE_in_body982); 
+			dbg.location(76,38);
+			RBRACE68=(Token)match(input,RBRACE,FOLLOW_RBRACE_in_body973); 
 			}
 
 			retval.stop = input.LT(-1);
@@ -1532,6 +1912,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(76, 38);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "body");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "body"
@@ -1545,7 +1934,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "exp"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:72:1: exp : lexp ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )? ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:77:1: exp : lexp ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )? ;
 	public final mygrammarParser.exp_return exp() throws  {
 		mygrammarParser.exp_return retval = new mygrammarParser.exp_return();
 		retval.start = input.LT(1);
@@ -1558,29 +1947,45 @@ public class mygrammarParser extends Parser {
 
 		Object set70_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "exp");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(77, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:72:5: ( lexp ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )? )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:72:7: lexp ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )?
+			// /Users/Anya/github/compiler-theory/mygrammar.g:77:5: ( lexp ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )? )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:77:7: lexp ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )?
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			pushFollow(FOLLOW_lexp_in_exp990);
+			dbg.location(77,7);
+			pushFollow(FOLLOW_lexp_in_exp981);
 			lexp69=lexp();
 			state._fsp--;
 
 			adaptor.addChild(root_0, lexp69.getTree());
-
-			// /Users/Anya/github/compiler-theory/mygrammar.g:72:12: ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )?
+			dbg.location(77,12);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:77:12: ( ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp )?
 			int alt13=2;
+			try { dbg.enterSubRule(13);
+			try { dbg.enterDecision(13, decisionCanBacktrack[13]);
+
 			int LA13_0 = input.LA(1);
 			if ( (LA13_0==EQ||(LA13_0 >= GT && LA13_0 <= GTE)||(LA13_0 >= LT && LA13_0 <= LTE)||LA13_0==NEQ) ) {
 				alt13=1;
 			}
+			} finally {dbg.exitDecision(13);}
+
 			switch (alt13) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:72:13: ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:77:13: ( GT | LT | GTE | LTE | NEQ | EQ ) ^ lexp
 					{
+					dbg.location(77,46);
 					set70=input.LT(1);
 					set70=input.LT(1);
 					if ( input.LA(1)==EQ||(input.LA(1) >= GT && input.LA(1) <= GTE)||(input.LA(1) >= LT && input.LA(1) <= LTE)||input.LA(1)==NEQ ) {
@@ -1590,9 +1995,10 @@ public class mygrammarParser extends Parser {
 					}
 					else {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
+						dbg.recognitionException(mse);
 						throw mse;
-					}
-					pushFollow(FOLLOW_lexp_in_exp1019);
+					}dbg.location(77,48);
+					pushFollow(FOLLOW_lexp_in_exp1010);
 					lexp71=lexp();
 					state._fsp--;
 
@@ -1602,6 +2008,7 @@ public class mygrammarParser extends Parser {
 					break;
 
 			}
+			} finally {dbg.exitSubRule(13);}
 
 			}
 
@@ -1619,6 +2026,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(77, 53);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "exp");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "exp"
@@ -1632,7 +2048,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "lexp"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:73:1: lexp : term ( ( PLUS | MINUS ) ^ term )* ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:78:1: lexp : term ( ( PLUS | MINUS ) ^ term )* ;
 	public final mygrammarParser.lexp_return lexp() throws  {
 		mygrammarParser.lexp_return retval = new mygrammarParser.lexp_return();
 		retval.start = input.LT(1);
@@ -1645,32 +2061,49 @@ public class mygrammarParser extends Parser {
 
 		Object set73_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "lexp");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(78, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:73:7: ( term ( ( PLUS | MINUS ) ^ term )* )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:73:9: term ( ( PLUS | MINUS ) ^ term )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:78:7: ( term ( ( PLUS | MINUS ) ^ term )* )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:78:9: term ( ( PLUS | MINUS ) ^ term )*
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			pushFollow(FOLLOW_term_in_lexp1029);
+			dbg.location(78,9);
+			pushFollow(FOLLOW_term_in_lexp1020);
 			term72=term();
 			state._fsp--;
 
 			adaptor.addChild(root_0, term72.getTree());
+			dbg.location(78,14);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:78:14: ( ( PLUS | MINUS ) ^ term )*
+			try { dbg.enterSubRule(14);
 
-			// /Users/Anya/github/compiler-theory/mygrammar.g:73:14: ( ( PLUS | MINUS ) ^ term )*
 			loop14:
 			while (true) {
 				int alt14=2;
+				try { dbg.enterDecision(14, decisionCanBacktrack[14]);
+
 				int LA14_0 = input.LA(1);
 				if ( (LA14_0==MINUS||LA14_0==PLUS) ) {
 					alt14=1;
 				}
 
+				} finally {dbg.exitDecision(14);}
+
 				switch (alt14) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:73:15: ( PLUS | MINUS ) ^ term
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:78:15: ( PLUS | MINUS ) ^ term
 					{
+					dbg.location(78,29);
 					set73=input.LT(1);
 					set73=input.LT(1);
 					if ( input.LA(1)==MINUS||input.LA(1)==PLUS ) {
@@ -1680,9 +2113,10 @@ public class mygrammarParser extends Parser {
 					}
 					else {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
+						dbg.recognitionException(mse);
 						throw mse;
-					}
-					pushFollow(FOLLOW_term_in_lexp1041);
+					}dbg.location(78,31);
+					pushFollow(FOLLOW_term_in_lexp1032);
 					term74=term();
 					state._fsp--;
 
@@ -1695,6 +2129,7 @@ public class mygrammarParser extends Parser {
 					break loop14;
 				}
 			}
+			} finally {dbg.exitSubRule(14);}
 
 			}
 
@@ -1712,6 +2147,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(78, 36);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "lexp");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "lexp"
@@ -1725,7 +2169,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "term"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:74:1: term : factor ( ( TIMES | MOD | DIV ) ^ factor )* ;
+	// /Users/Anya/github/compiler-theory/mygrammar.g:79:1: term : factor ( ( TIMES | MOD | DIV ) ^ factor )* ;
 	public final mygrammarParser.term_return term() throws  {
 		mygrammarParser.term_return retval = new mygrammarParser.term_return();
 		retval.start = input.LT(1);
@@ -1738,32 +2182,49 @@ public class mygrammarParser extends Parser {
 
 		Object set76_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "term");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(79, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:74:7: ( factor ( ( TIMES | MOD | DIV ) ^ factor )* )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:74:9: factor ( ( TIMES | MOD | DIV ) ^ factor )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:79:7: ( factor ( ( TIMES | MOD | DIV ) ^ factor )* )
+			dbg.enterAlt(1);
+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:79:9: factor ( ( TIMES | MOD | DIV ) ^ factor )*
 			{
 			root_0 = (Object)adaptor.nil();
 
 
-			pushFollow(FOLLOW_factor_in_term1052);
+			dbg.location(79,9);
+			pushFollow(FOLLOW_factor_in_term1043);
 			factor75=factor();
 			state._fsp--;
 
 			adaptor.addChild(root_0, factor75.getTree());
+			dbg.location(79,16);
+			// /Users/Anya/github/compiler-theory/mygrammar.g:79:16: ( ( TIMES | MOD | DIV ) ^ factor )*
+			try { dbg.enterSubRule(15);
 
-			// /Users/Anya/github/compiler-theory/mygrammar.g:74:16: ( ( TIMES | MOD | DIV ) ^ factor )*
 			loop15:
 			while (true) {
 				int alt15=2;
+				try { dbg.enterDecision(15, decisionCanBacktrack[15]);
+
 				int LA15_0 = input.LA(1);
 				if ( (LA15_0==DIV||LA15_0==MOD||LA15_0==TIMES) ) {
 					alt15=1;
 				}
 
+				} finally {dbg.exitDecision(15);}
+
 				switch (alt15) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:74:17: ( TIMES | MOD | DIV ) ^ factor
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:79:17: ( TIMES | MOD | DIV ) ^ factor
 					{
+					dbg.location(79,32);
 					set76=input.LT(1);
 					set76=input.LT(1);
 					if ( input.LA(1)==DIV||input.LA(1)==MOD||input.LA(1)==TIMES ) {
@@ -1773,9 +2234,10 @@ public class mygrammarParser extends Parser {
 					}
 					else {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
+						dbg.recognitionException(mse);
 						throw mse;
-					}
-					pushFollow(FOLLOW_factor_in_term1064);
+					}dbg.location(79,34);
+					pushFollow(FOLLOW_factor_in_term1055);
 					factor77=factor();
 					state._fsp--;
 
@@ -1788,6 +2250,7 @@ public class mygrammarParser extends Parser {
 					break loop15;
 				}
 			}
+			} finally {dbg.exitSubRule(15);}
 
 			}
 
@@ -1805,6 +2268,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(79, 41);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "term");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "term"
@@ -1818,7 +2290,7 @@ public class mygrammarParser extends Parser {
 
 
 	// $ANTLR start "factor"
-	// /Users/Anya/github/compiler-theory/mygrammar.g:75:1: factor : ( LPAREN ! lexp RPAREN !| ( MINUS )? ( ID | NUMBER ) | CHAR | ID LPAREN ! ( ID ( COMMA ! ID )* )? RPAREN !);
+	// /Users/Anya/github/compiler-theory/mygrammar.g:80:1: factor : ( LPAREN ! lexp RPAREN !| ( MINUS )? ( ID | NUMBER ) | CHAR | ID LPAREN ! ( ID ( COMMA ! ID )* )? RPAREN !);
 	public final mygrammarParser.factor_return factor() throws  {
 		mygrammarParser.factor_return retval = new mygrammarParser.factor_return();
 		retval.start = input.LT(1);
@@ -1850,9 +2322,16 @@ public class mygrammarParser extends Parser {
 		Object ID88_tree=null;
 		Object RPAREN89_tree=null;
 
+		try { dbg.enterRule(getGrammarFileName(), "factor");
+		if ( getRuleLevel()==0 ) {dbg.commence();}
+		incRuleLevel();
+		dbg.location(80, 0);
+
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:75:8: ( LPAREN ! lexp RPAREN !| ( MINUS )? ( ID | NUMBER ) | CHAR | ID LPAREN ! ( ID ( COMMA ! ID )* )? RPAREN !)
+			// /Users/Anya/github/compiler-theory/mygrammar.g:80:8: ( LPAREN ! lexp RPAREN !| ( MINUS )? ( ID | NUMBER ) | CHAR | ID LPAREN ! ( ID ( COMMA ! ID )* )? RPAREN !)
 			int alt19=4;
+			try { dbg.enterDecision(19, decisionCanBacktrack[19]);
+
 			switch ( input.LA(1) ) {
 			case LPAREN:
 				{
@@ -1881,6 +2360,7 @@ public class mygrammarParser extends Parser {
 						input.consume();
 						NoViableAltException nvae =
 							new NoViableAltException("", 19, 3, input);
+						dbg.recognitionException(nvae);
 						throw nvae;
 					} finally {
 						input.rewind(nvaeMark);
@@ -1897,42 +2377,59 @@ public class mygrammarParser extends Parser {
 			default:
 				NoViableAltException nvae =
 					new NoViableAltException("", 19, 0, input);
+				dbg.recognitionException(nvae);
 				throw nvae;
 			}
+			} finally {dbg.exitDecision(19);}
+
 			switch (alt19) {
 				case 1 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:75:10: LPAREN ! lexp RPAREN !
+					dbg.enterAlt(1);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:80:10: LPAREN ! lexp RPAREN !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					LPAREN78=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_factor1073); 
-					pushFollow(FOLLOW_lexp_in_factor1076);
+					dbg.location(80,16);
+					LPAREN78=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_factor1064); dbg.location(80,18);
+					pushFollow(FOLLOW_lexp_in_factor1067);
 					lexp79=lexp();
 					state._fsp--;
 
 					adaptor.addChild(root_0, lexp79.getTree());
-
-					RPAREN80=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_factor1078); 
+					dbg.location(80,29);
+					RPAREN80=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_factor1069); 
 					}
 					break;
 				case 2 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:76:10: ( MINUS )? ( ID | NUMBER )
+					dbg.enterAlt(2);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:81:10: ( MINUS )? ( ID | NUMBER )
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					// /Users/Anya/github/compiler-theory/mygrammar.g:76:10: ( MINUS )?
+					dbg.location(81,10);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:81:10: ( MINUS )?
 					int alt16=2;
+					try { dbg.enterSubRule(16);
+					try { dbg.enterDecision(16, decisionCanBacktrack[16]);
+
 					int LA16_0 = input.LA(1);
 					if ( (LA16_0==MINUS) ) {
 						alt16=1;
 					}
+					} finally {dbg.exitDecision(16);}
+
 					switch (alt16) {
 						case 1 :
-							// /Users/Anya/github/compiler-theory/mygrammar.g:76:11: MINUS
+							dbg.enterAlt(1);
+
+							// /Users/Anya/github/compiler-theory/mygrammar.g:81:11: MINUS
 							{
-							MINUS81=(Token)match(input,MINUS,FOLLOW_MINUS_in_factor1091); 
+							dbg.location(81,11);
+							MINUS81=(Token)match(input,MINUS,FOLLOW_MINUS_in_factor1082); 
 							MINUS81_tree = (Object)adaptor.create(MINUS81);
 							adaptor.addChild(root_0, MINUS81_tree);
 
@@ -1940,7 +2437,8 @@ public class mygrammarParser extends Parser {
 							break;
 
 					}
-
+					} finally {dbg.exitSubRule(16);}
+					dbg.location(81,19);
 					set82=input.LT(1);
 					if ( input.LA(1)==ID||input.LA(1)==NUMBER ) {
 						input.consume();
@@ -1949,62 +2447,86 @@ public class mygrammarParser extends Parser {
 					}
 					else {
 						MismatchedSetException mse = new MismatchedSetException(null,input);
+						dbg.recognitionException(mse);
 						throw mse;
 					}
 					}
 					break;
 				case 3 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:77:10: CHAR
+					dbg.enterAlt(3);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:82:10: CHAR
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					CHAR83=(Token)match(input,CHAR,FOLLOW_CHAR_in_factor1112); 
+					dbg.location(82,10);
+					CHAR83=(Token)match(input,CHAR,FOLLOW_CHAR_in_factor1103); 
 					CHAR83_tree = (Object)adaptor.create(CHAR83);
 					adaptor.addChild(root_0, CHAR83_tree);
 
 					}
 					break;
 				case 4 :
-					// /Users/Anya/github/compiler-theory/mygrammar.g:78:10: ID LPAREN ! ( ID ( COMMA ! ID )* )? RPAREN !
+					dbg.enterAlt(4);
+
+					// /Users/Anya/github/compiler-theory/mygrammar.g:83:10: ID LPAREN ! ( ID ( COMMA ! ID )* )? RPAREN !
 					{
 					root_0 = (Object)adaptor.nil();
 
 
-					ID84=(Token)match(input,ID,FOLLOW_ID_in_factor1123); 
+					dbg.location(83,10);
+					ID84=(Token)match(input,ID,FOLLOW_ID_in_factor1114); 
 					ID84_tree = (Object)adaptor.create(ID84);
 					adaptor.addChild(root_0, ID84_tree);
-
-					LPAREN85=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_factor1125); 
-					// /Users/Anya/github/compiler-theory/mygrammar.g:78:21: ( ID ( COMMA ! ID )* )?
+					dbg.location(83,19);
+					LPAREN85=(Token)match(input,LPAREN,FOLLOW_LPAREN_in_factor1116); dbg.location(83,21);
+					// /Users/Anya/github/compiler-theory/mygrammar.g:83:21: ( ID ( COMMA ! ID )* )?
 					int alt18=2;
+					try { dbg.enterSubRule(18);
+					try { dbg.enterDecision(18, decisionCanBacktrack[18]);
+
 					int LA18_0 = input.LA(1);
 					if ( (LA18_0==ID) ) {
 						alt18=1;
 					}
+					} finally {dbg.exitDecision(18);}
+
 					switch (alt18) {
 						case 1 :
-							// /Users/Anya/github/compiler-theory/mygrammar.g:78:22: ID ( COMMA ! ID )*
+							dbg.enterAlt(1);
+
+							// /Users/Anya/github/compiler-theory/mygrammar.g:83:22: ID ( COMMA ! ID )*
 							{
-							ID86=(Token)match(input,ID,FOLLOW_ID_in_factor1129); 
+							dbg.location(83,22);
+							ID86=(Token)match(input,ID,FOLLOW_ID_in_factor1120); 
 							ID86_tree = (Object)adaptor.create(ID86);
 							adaptor.addChild(root_0, ID86_tree);
+							dbg.location(83,24);
+							// /Users/Anya/github/compiler-theory/mygrammar.g:83:24: ( COMMA ! ID )*
+							try { dbg.enterSubRule(17);
 
-							// /Users/Anya/github/compiler-theory/mygrammar.g:78:24: ( COMMA ! ID )*
 							loop17:
 							while (true) {
 								int alt17=2;
+								try { dbg.enterDecision(17, decisionCanBacktrack[17]);
+
 								int LA17_0 = input.LA(1);
 								if ( (LA17_0==COMMA) ) {
 									alt17=1;
 								}
 
+								} finally {dbg.exitDecision(17);}
+
 								switch (alt17) {
 								case 1 :
-									// /Users/Anya/github/compiler-theory/mygrammar.g:78:25: COMMA ! ID
+									dbg.enterAlt(1);
+
+									// /Users/Anya/github/compiler-theory/mygrammar.g:83:25: COMMA ! ID
 									{
-									COMMA87=(Token)match(input,COMMA,FOLLOW_COMMA_in_factor1131); 
-									ID88=(Token)match(input,ID,FOLLOW_ID_in_factor1134); 
+									dbg.location(83,30);
+									COMMA87=(Token)match(input,COMMA,FOLLOW_COMMA_in_factor1122); dbg.location(83,32);
+									ID88=(Token)match(input,ID,FOLLOW_ID_in_factor1125); 
 									ID88_tree = (Object)adaptor.create(ID88);
 									adaptor.addChild(root_0, ID88_tree);
 
@@ -2015,13 +2537,15 @@ public class mygrammarParser extends Parser {
 									break loop17;
 								}
 							}
+							} finally {dbg.exitSubRule(17);}
 
 							}
 							break;
 
 					}
-
-					RPAREN89=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_factor1140); 
+					} finally {dbg.exitSubRule(18);}
+					dbg.location(83,45);
+					RPAREN89=(Token)match(input,RPAREN,FOLLOW_RPAREN_in_factor1131); 
 					}
 					break;
 
@@ -2040,6 +2564,15 @@ public class mygrammarParser extends Parser {
 		finally {
 			// do for sure before leaving
 		}
+		dbg.location(83, 46);
+
+		}
+		finally {
+			dbg.exitRule(getGrammarFileName(), "factor");
+			decRuleLevel();
+			if ( getRuleLevel()==0 ) {dbg.terminate();}
+		}
+
 		return retval;
 	}
 	// $ANTLR end "factor"
@@ -2048,94 +2581,94 @@ public class mygrammarParser extends Parser {
 
 
 
-	public static final BitSet FOLLOW_includes_in_program560 = new BitSet(new long[]{0x000000C800008000L});
-	public static final BitSet FOLLOW_decls_in_program562 = new BitSet(new long[]{0x000000C800008000L});
-	public static final BitSet FOLLOW_procedure_in_program565 = new BitSet(new long[]{0x000000C800008000L});
-	public static final BitSet FOLLOW_main_in_program569 = new BitSet(new long[]{0x0000000000000000L});
-	public static final BitSet FOLLOW_EOF_in_program571 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_typeident_in_args580 = new BitSet(new long[]{0x0000000000000082L});
-	public static final BitSet FOLLOW_COMMA_in_args583 = new BitSet(new long[]{0x0000004800000000L});
-	public static final BitSet FOLLOW_typeident_in_args585 = new BitSet(new long[]{0x0000000000000082L});
-	public static final BitSet FOLLOW_34_in_includes613 = new BitSet(new long[]{0x0000000080000000L});
-	public static final BitSet FOLLOW_STRING_in_includes615 = new BitSet(new long[]{0x0000000400000002L});
-	public static final BitSet FOLLOW_39_in_main636 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_main638 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_RPAREN_in_main640 = new BitSet(new long[]{0x0000000000020000L});
-	public static final BitSet FOLLOW_body_in_main642 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_ID_in_procedure666 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_procedure669 = new BitSet(new long[]{0x0000004810000000L});
-	public static final BitSet FOLLOW_args_in_procedure672 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_RPAREN_in_procedure674 = new BitSet(new long[]{0x0000000000020000L});
-	public static final BitSet FOLLOW_body_in_procedure677 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_38_in_typeident684 = new BitSet(new long[]{0x0000000000008000L});
-	public static final BitSet FOLLOW_ID_in_typeident687 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_35_in_typeident691 = new BitSet(new long[]{0x0000000000008000L});
-	public static final BitSet FOLLOW_ID_in_typeident694 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_typeident_in_decls703 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_SEMICOLON_in_decls705 = new BitSet(new long[]{0x0000004800000002L});
-	public static final BitSet FOLLOW_LBRACE_in_stmt726 = new BitSet(new long[]{0x00007F2008028000L});
-	public static final BitSet FOLLOW_stmtlist_in_stmt729 = new BitSet(new long[]{0x0000000008000000L});
-	public static final BitSet FOLLOW_RBRACE_in_stmt731 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_46_in_stmt741 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_stmt743 = new BitSet(new long[]{0x0000000002448040L});
-	public static final BitSet FOLLOW_exp_in_stmt745 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_RPAREN_in_stmt747 = new BitSet(new long[]{0x00007F2000028000L});
-	public static final BitSet FOLLOW_stmt_in_stmt749 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_37_in_stmt772 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_stmt774 = new BitSet(new long[]{0x0000000002448040L});
-	public static final BitSet FOLLOW_exp_in_stmt776 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_RPAREN_in_stmt778 = new BitSet(new long[]{0x00007F2000028000L});
-	public static final BitSet FOLLOW_stmt_in_stmt782 = new BitSet(new long[]{0x0000001000000002L});
-	public static final BitSet FOLLOW_36_in_stmt794 = new BitSet(new long[]{0x00007F2000028000L});
-	public static final BitSet FOLLOW_stmt_in_stmt798 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_ID_in_stmt832 = new BitSet(new long[]{0x0000000000000020L});
-	public static final BitSet FOLLOW_ASSIGN_in_stmt834 = new BitSet(new long[]{0x0000000002448040L});
-	public static final BitSet FOLLOW_lexp_in_stmt837 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_SEMICOLON_in_stmt839 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_set_in_stmt849 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_stmt866 = new BitSet(new long[]{0x0000000000008000L});
-	public static final BitSet FOLLOW_ID_in_stmt869 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_RPAREN_in_stmt871 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_SEMICOLON_in_stmt874 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_42_in_stmt884 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_stmt887 = new BitSet(new long[]{0x0000000080000000L});
-	public static final BitSet FOLLOW_STRING_in_stmt890 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_RPAREN_in_stmt892 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_SEMICOLON_in_stmt895 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_45_in_stmt905 = new BitSet(new long[]{0x0000000022448040L});
-	public static final BitSet FOLLOW_lexp_in_stmt909 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_SEMICOLON_in_stmt913 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_ID_in_stmt923 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_stmt926 = new BitSet(new long[]{0x0000000000008000L});
-	public static final BitSet FOLLOW_ID_in_stmt929 = new BitSet(new long[]{0x0000000010000080L});
-	public static final BitSet FOLLOW_COMMA_in_stmt932 = new BitSet(new long[]{0x0000000000008000L});
-	public static final BitSet FOLLOW_ID_in_stmt935 = new BitSet(new long[]{0x0000000010000080L});
-	public static final BitSet FOLLOW_RPAREN_in_stmt939 = new BitSet(new long[]{0x0000000020000000L});
-	public static final BitSet FOLLOW_SEMICOLON_in_stmt942 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_stmt_in_stmtlist951 = new BitSet(new long[]{0x00007F2000028002L});
-	public static final BitSet FOLLOW_LBRACE_in_body975 = new BitSet(new long[]{0x00007F6808028000L});
-	public static final BitSet FOLLOW_decls_in_body978 = new BitSet(new long[]{0x00007F2008028000L});
-	public static final BitSet FOLLOW_stmtlist_in_body980 = new BitSet(new long[]{0x0000000008000000L});
-	public static final BitSet FOLLOW_RBRACE_in_body982 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_lexp_in_exp990 = new BitSet(new long[]{0x0000000001186802L});
-	public static final BitSet FOLLOW_set_in_exp993 = new BitSet(new long[]{0x0000000002448040L});
-	public static final BitSet FOLLOW_lexp_in_exp1019 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_term_in_lexp1029 = new BitSet(new long[]{0x0000000004400002L});
-	public static final BitSet FOLLOW_set_in_lexp1032 = new BitSet(new long[]{0x0000000002448040L});
-	public static final BitSet FOLLOW_term_in_lexp1041 = new BitSet(new long[]{0x0000000004400002L});
-	public static final BitSet FOLLOW_factor_in_term1052 = new BitSet(new long[]{0x0000000100800402L});
-	public static final BitSet FOLLOW_set_in_term1055 = new BitSet(new long[]{0x0000000002448040L});
-	public static final BitSet FOLLOW_factor_in_term1064 = new BitSet(new long[]{0x0000000100800402L});
-	public static final BitSet FOLLOW_LPAREN_in_factor1073 = new BitSet(new long[]{0x0000000002448040L});
-	public static final BitSet FOLLOW_lexp_in_factor1076 = new BitSet(new long[]{0x0000000010000000L});
-	public static final BitSet FOLLOW_RPAREN_in_factor1078 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_MINUS_in_factor1091 = new BitSet(new long[]{0x0000000002008000L});
-	public static final BitSet FOLLOW_set_in_factor1095 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_CHAR_in_factor1112 = new BitSet(new long[]{0x0000000000000002L});
-	public static final BitSet FOLLOW_ID_in_factor1123 = new BitSet(new long[]{0x0000000000040000L});
-	public static final BitSet FOLLOW_LPAREN_in_factor1125 = new BitSet(new long[]{0x0000000010008000L});
-	public static final BitSet FOLLOW_ID_in_factor1129 = new BitSet(new long[]{0x0000000010000080L});
-	public static final BitSet FOLLOW_COMMA_in_factor1131 = new BitSet(new long[]{0x0000000000008000L});
-	public static final BitSet FOLLOW_ID_in_factor1134 = new BitSet(new long[]{0x0000000010000080L});
-	public static final BitSet FOLLOW_RPAREN_in_factor1140 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_includes_in_program551 = new BitSet(new long[]{0x000000C800008000L});
+	public static final BitSet FOLLOW_decls_in_program553 = new BitSet(new long[]{0x000000C800008000L});
+	public static final BitSet FOLLOW_procedure_in_program556 = new BitSet(new long[]{0x000000C800008000L});
+	public static final BitSet FOLLOW_main_in_program560 = new BitSet(new long[]{0x0000000000000000L});
+	public static final BitSet FOLLOW_EOF_in_program562 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_typeident_in_args571 = new BitSet(new long[]{0x0000000000000082L});
+	public static final BitSet FOLLOW_COMMA_in_args574 = new BitSet(new long[]{0x0000004800000000L});
+	public static final BitSet FOLLOW_typeident_in_args576 = new BitSet(new long[]{0x0000000000000082L});
+	public static final BitSet FOLLOW_34_in_includes604 = new BitSet(new long[]{0x0000000080000000L});
+	public static final BitSet FOLLOW_STRING_in_includes606 = new BitSet(new long[]{0x0000000400000002L});
+	public static final BitSet FOLLOW_39_in_main627 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_main629 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_RPAREN_in_main631 = new BitSet(new long[]{0x0000000000020000L});
+	public static final BitSet FOLLOW_body_in_main633 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_ID_in_procedure657 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_procedure660 = new BitSet(new long[]{0x0000004810000000L});
+	public static final BitSet FOLLOW_args_in_procedure663 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_RPAREN_in_procedure665 = new BitSet(new long[]{0x0000000000020000L});
+	public static final BitSet FOLLOW_body_in_procedure668 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_38_in_typeident675 = new BitSet(new long[]{0x0000000000008000L});
+	public static final BitSet FOLLOW_ID_in_typeident678 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_35_in_typeident682 = new BitSet(new long[]{0x0000000000008000L});
+	public static final BitSet FOLLOW_ID_in_typeident685 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_typeident_in_decls694 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_SEMICOLON_in_decls696 = new BitSet(new long[]{0x0000004800000002L});
+	public static final BitSet FOLLOW_LBRACE_in_stmt717 = new BitSet(new long[]{0x00007F2008028000L});
+	public static final BitSet FOLLOW_stmtlist_in_stmt720 = new BitSet(new long[]{0x0000000008000000L});
+	public static final BitSet FOLLOW_RBRACE_in_stmt722 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_46_in_stmt732 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_stmt734 = new BitSet(new long[]{0x0000000002448040L});
+	public static final BitSet FOLLOW_exp_in_stmt736 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_RPAREN_in_stmt738 = new BitSet(new long[]{0x00007F2000028000L});
+	public static final BitSet FOLLOW_stmt_in_stmt740 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_37_in_stmt763 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_stmt765 = new BitSet(new long[]{0x0000000002448040L});
+	public static final BitSet FOLLOW_exp_in_stmt767 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_RPAREN_in_stmt769 = new BitSet(new long[]{0x00007F2000028000L});
+	public static final BitSet FOLLOW_stmt_in_stmt773 = new BitSet(new long[]{0x0000001000000002L});
+	public static final BitSet FOLLOW_36_in_stmt785 = new BitSet(new long[]{0x00007F2000028000L});
+	public static final BitSet FOLLOW_stmt_in_stmt789 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_ID_in_stmt823 = new BitSet(new long[]{0x0000000000000020L});
+	public static final BitSet FOLLOW_ASSIGN_in_stmt825 = new BitSet(new long[]{0x0000000002448040L});
+	public static final BitSet FOLLOW_lexp_in_stmt828 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_SEMICOLON_in_stmt830 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_set_in_stmt840 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_stmt857 = new BitSet(new long[]{0x0000000000008000L});
+	public static final BitSet FOLLOW_ID_in_stmt860 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_RPAREN_in_stmt862 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_SEMICOLON_in_stmt865 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_42_in_stmt875 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_stmt878 = new BitSet(new long[]{0x0000000080000000L});
+	public static final BitSet FOLLOW_STRING_in_stmt881 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_RPAREN_in_stmt883 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_SEMICOLON_in_stmt886 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_45_in_stmt896 = new BitSet(new long[]{0x0000000022448040L});
+	public static final BitSet FOLLOW_lexp_in_stmt900 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_SEMICOLON_in_stmt904 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_ID_in_stmt914 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_stmt917 = new BitSet(new long[]{0x0000000000008000L});
+	public static final BitSet FOLLOW_ID_in_stmt920 = new BitSet(new long[]{0x0000000010000080L});
+	public static final BitSet FOLLOW_COMMA_in_stmt923 = new BitSet(new long[]{0x0000000000008000L});
+	public static final BitSet FOLLOW_ID_in_stmt926 = new BitSet(new long[]{0x0000000010000080L});
+	public static final BitSet FOLLOW_RPAREN_in_stmt930 = new BitSet(new long[]{0x0000000020000000L});
+	public static final BitSet FOLLOW_SEMICOLON_in_stmt933 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_stmt_in_stmtlist942 = new BitSet(new long[]{0x00007F2000028002L});
+	public static final BitSet FOLLOW_LBRACE_in_body966 = new BitSet(new long[]{0x00007F6808028000L});
+	public static final BitSet FOLLOW_decls_in_body969 = new BitSet(new long[]{0x00007F2008028000L});
+	public static final BitSet FOLLOW_stmtlist_in_body971 = new BitSet(new long[]{0x0000000008000000L});
+	public static final BitSet FOLLOW_RBRACE_in_body973 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_lexp_in_exp981 = new BitSet(new long[]{0x0000000001186802L});
+	public static final BitSet FOLLOW_set_in_exp984 = new BitSet(new long[]{0x0000000002448040L});
+	public static final BitSet FOLLOW_lexp_in_exp1010 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_term_in_lexp1020 = new BitSet(new long[]{0x0000000004400002L});
+	public static final BitSet FOLLOW_set_in_lexp1023 = new BitSet(new long[]{0x0000000002448040L});
+	public static final BitSet FOLLOW_term_in_lexp1032 = new BitSet(new long[]{0x0000000004400002L});
+	public static final BitSet FOLLOW_factor_in_term1043 = new BitSet(new long[]{0x0000000100800402L});
+	public static final BitSet FOLLOW_set_in_term1046 = new BitSet(new long[]{0x0000000002448040L});
+	public static final BitSet FOLLOW_factor_in_term1055 = new BitSet(new long[]{0x0000000100800402L});
+	public static final BitSet FOLLOW_LPAREN_in_factor1064 = new BitSet(new long[]{0x0000000002448040L});
+	public static final BitSet FOLLOW_lexp_in_factor1067 = new BitSet(new long[]{0x0000000010000000L});
+	public static final BitSet FOLLOW_RPAREN_in_factor1069 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_MINUS_in_factor1082 = new BitSet(new long[]{0x0000000002008000L});
+	public static final BitSet FOLLOW_set_in_factor1086 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_CHAR_in_factor1103 = new BitSet(new long[]{0x0000000000000002L});
+	public static final BitSet FOLLOW_ID_in_factor1114 = new BitSet(new long[]{0x0000000000040000L});
+	public static final BitSet FOLLOW_LPAREN_in_factor1116 = new BitSet(new long[]{0x0000000010008000L});
+	public static final BitSet FOLLOW_ID_in_factor1120 = new BitSet(new long[]{0x0000000010000080L});
+	public static final BitSet FOLLOW_COMMA_in_factor1122 = new BitSet(new long[]{0x0000000000008000L});
+	public static final BitSet FOLLOW_ID_in_factor1125 = new BitSet(new long[]{0x0000000010000080L});
+	public static final BitSet FOLLOW_RPAREN_in_factor1131 = new BitSet(new long[]{0x0000000000000002L});
 }

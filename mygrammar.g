@@ -22,7 +22,6 @@ tokens {PLUS = '+';
         LBRACE = '{';
         RBRACE = '}';
         SEMICOLON = ';';
-        //INCL = 'includes';
         
         //for outputting in the AST
         DECS ;
@@ -33,16 +32,21 @@ tokens {PLUS = '+';
         INCLS ;
         }
         
-@members {public static main(String[] args) throws displayRecognitionError {
-              Lexer l = new Lexer(new ANTLRFileStream(...));
+@members {
+         public static void main(String[] args) throws displayRecognitionError {
+              mygrammarLexer l = new mygrammarLexer(new ANTLRFileStream(args[4]));
               CommonTokenStream tokens = new CommonTokenStream(l);
-              Parser p = new Parser(tokens);
-              try {p.exp();} catch (Exception e) {System.err("Should hopefully never happen");}
+              mygrammarParser p = new mygramamrParser(tokens);
+              try {
+                  p.expr();
+              } 
+              catch (Exception e) {
+                  System.err("Should hopefully never happen");
+              }
           }
-          }
+}
           
 /*LEXER*/
-
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
 WS  :   ( ' ' | '\t' | '\r' | '\n' ) {$channel=HIDDEN;};
 CHAR :  '\'' (~('\''|'\\') ) '\'';

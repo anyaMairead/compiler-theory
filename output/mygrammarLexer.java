@@ -1,4 +1,4 @@
-// $ANTLR 3.5 /Users/Anya/github/compiler-theory/mygrammar.g 2013-02-15 02:04:24
+// $ANTLR 3.5 /Users/Anya/github/compiler-theory/mygrammar.g 2013-02-15 13:36:08
 
 import org.antlr.runtime.*;
 import java.util.Stack;
@@ -709,8 +709,8 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = ID;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:46:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:46:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:51:5: ( ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )* )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:51:7: ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			{
 			if ( (input.LA(1) >= 'A' && input.LA(1) <= 'Z')||input.LA(1)=='_'||(input.LA(1) >= 'a' && input.LA(1) <= 'z') ) {
 				input.consume();
@@ -720,7 +720,7 @@ public class mygrammarLexer extends Lexer {
 				recover(mse);
 				throw mse;
 			}
-			// /Users/Anya/github/compiler-theory/mygrammar.g:46:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:51:31: ( 'a' .. 'z' | 'A' .. 'Z' | '0' .. '9' | '_' )*
 			loop1:
 			while (true) {
 				int alt1=2;
@@ -765,8 +765,8 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = WS;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:47:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:47:9: ( ' ' | '\\t' | '\\r' | '\\n' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:52:5: ( ( ' ' | '\\t' | '\\r' | '\\n' ) )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:52:9: ( ' ' | '\\t' | '\\r' | '\\n' )
 			{
 			if ( (input.LA(1) >= '\t' && input.LA(1) <= '\n')||input.LA(1)=='\r'||input.LA(1)==' ' ) {
 				input.consume();
@@ -793,8 +793,8 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = CHAR;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:48:6: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:48:9: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
+			// /Users/Anya/github/compiler-theory/mygrammar.g:53:6: ( '\\'' (~ ( '\\'' | '\\\\' ) ) '\\'' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:53:9: '\\'' (~ ( '\\'' | '\\\\' ) ) '\\''
 			{
 			match('\''); 
 			if ( (input.LA(1) >= '\u0000' && input.LA(1) <= '&')||(input.LA(1) >= '(' && input.LA(1) <= '[')||(input.LA(1) >= ']' && input.LA(1) <= '\uFFFF') ) {
@@ -822,10 +822,10 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = NUMBER;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:49:9: ( ( DIGIT )+ )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:49:11: ( DIGIT )+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:54:9: ( ( DIGIT )+ )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:54:11: ( DIGIT )+
 			{
-			// /Users/Anya/github/compiler-theory/mygrammar.g:49:11: ( DIGIT )+
+			// /Users/Anya/github/compiler-theory/mygrammar.g:54:11: ( DIGIT )+
 			int cnt2=0;
 			loop2:
 			while (true) {
@@ -874,11 +874,11 @@ public class mygrammarLexer extends Lexer {
 		try {
 			int _type = STRING;
 			int _channel = DEFAULT_TOKEN_CHANNEL;
-			// /Users/Anya/github/compiler-theory/mygrammar.g:50:8: ( '\"' (~ ( '\\\\' | '\"' ) )* '\"' )
-			// /Users/Anya/github/compiler-theory/mygrammar.g:50:11: '\"' (~ ( '\\\\' | '\"' ) )* '\"'
+			// /Users/Anya/github/compiler-theory/mygrammar.g:55:8: ( '\"' (~ ( '\\\\' | '\"' ) )* '\"' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:55:11: '\"' (~ ( '\\\\' | '\"' ) )* '\"'
 			{
 			match('\"'); 
-			// /Users/Anya/github/compiler-theory/mygrammar.g:50:15: (~ ( '\\\\' | '\"' ) )*
+			// /Users/Anya/github/compiler-theory/mygrammar.g:55:15: (~ ( '\\\\' | '\"' ) )*
 			loop3:
 			while (true) {
 				int alt3=2;
@@ -922,7 +922,7 @@ public class mygrammarLexer extends Lexer {
 	// $ANTLR start "DIGIT"
 	public final void mDIGIT() throws RecognitionException {
 		try {
-			// /Users/Anya/github/compiler-theory/mygrammar.g:51:16: ( '0' .. '9' )
+			// /Users/Anya/github/compiler-theory/mygrammar.g:56:16: ( '0' .. '9' )
 			// /Users/Anya/github/compiler-theory/mygrammar.g:
 			{
 			if ( (input.LA(1) >= '0' && input.LA(1) <= '9') ) {
