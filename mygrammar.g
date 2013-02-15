@@ -33,15 +33,18 @@ tokens {PLUS = '+';
         }
         
 @members {
-         public static void main(String[] args) throws displayRecognitionError {
+         public static void main(String[] args) throws RecognitionException, IOException {
               mygrammarLexer l = new mygrammarLexer(new ANTLRFileStream(args[4]));
               CommonTokenStream tokens = new CommonTokenStream(l);
               mygrammarParser p = new mygramamrParser(tokens);
               try {
                   p.expr();
               } 
-              catch (Exception e) {
-                  System.err("Should hopefully never happen");
+              catch (RecognitionException rex) {
+                  System.err.println("Exception: " + e);
+              }
+              catch (IOException io) {
+                  System.err.println("Exception: " + io);
               }
           }
 }
