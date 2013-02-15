@@ -25,7 +25,7 @@ tokens {PLUS = '+';
         
         //for outputting in the AST
         //DECLS = ;
-        //ARGS = ;
+        ARGS = ;
         //MAIN = ;
         //EXPR = ;
         //STMTS = ;
@@ -40,23 +40,18 @@ tokens {PLUS = '+';
           }
           
 /*LEXER*/
-CHAR :  '\'' (~('\''|'\\') ) '\'';
 
 ID  :	('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
-
-INT :	'0'..'9'+;
-
-NUMBER 	: (INT)+;
-
-STRING :  '"' (~('\\'|'"') )* '"';
-
 WS  :   ( ' ' | '\t' | '\r' | '\n' ) {$channel=HIDDEN;};
-
+CHAR :  '\'' (~('\''|'\\') ) '\'';
+NUMBER 	: (DIGIT)+;
+STRING :  '"' (~('\\'|'"') )* '"';
+fragment DIGIT :	 '0'..'9';
 
 
 /*PARSER*/
 program	:	includes decls (procedure)* main EOF;
-args 	:	(typeident (COMMA typeident)*)? -> ^('ARGS' (typeident(typeident)*)?)?;
+args 	:	(typeident (COMMA typeident)*)? -> ^(ARGS (typeident(typeident)*)?)?;
 includes :	('#include' STRING)* -> ^('includes' (STRING)*)?;
 main	: 'main' LPAREN RPAREN body -> ^('MAIN' body);
 procedure :	('int' | 'char')? ID^ LPAREN! args RPAREN! body;
