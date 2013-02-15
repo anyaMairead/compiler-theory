@@ -40,6 +40,7 @@ tokens {PLUS = '+';
               try {
                   p.exp();
               } 
+              
               catch (RecognitionException rex) {
                   displayRecognitionError();
                   System.err.println("Exception: " + rex);

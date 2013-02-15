@@ -1,5 +1,7 @@
 import java.io.*;
 import org.antlr.runtime.*;
+import org.antlr.runtime.tree.*;
+import org.antlr.stringtemplate.*;
 import org.antlr.runtime.debug.DebugEventSocketProxy;
 
 
@@ -10,6 +12,10 @@ public class __Test__ {
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
         mygrammarParser g = new mygrammarParser(tokens);
+        CommonTree tree = (CommonTree)g.parse().getTree();
+        DOTTreeGenerator gen = new DOTTreeGenerator();
+        StringTemplate st = gen.toDOT(tree);
+        System.out.println(st);
         try {
             g.stmt();
         } catch (RecognitionException e) {
