@@ -72,12 +72,14 @@ public class mygrammarParser extends Parser {
 	// delegators
 
 
-	public mygrammarParser(TokenStream input) {
+	public mygrammarParser(CommonTokenStream input) {
 		this(input, new RecognizerSharedState());
 	}
+
 	public mygrammarParser(TokenStream input, RecognizerSharedState state) {
 		super(input, state);
 	}
+
 
 	protected TreeAdaptor adaptor = new CommonTreeAdaptor();
 

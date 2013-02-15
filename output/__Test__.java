@@ -9,7 +9,7 @@ public class __Test__ {
         mygrammarLexer lex = new mygrammarLexer(new ANTLRFileStream("/Users/Anya/github/compiler-theory/output/__Test___input.txt", "UTF8"));
         CommonTokenStream tokens = new CommonTokenStream(lex);
 
-        mygrammarParser g = new mygrammarParser(tokens, 49100, null);
+        mygrammarParser g = new mygrammarParser(tokens);
         try {
             g.stmt();
         } catch (RecognitionException e) {
